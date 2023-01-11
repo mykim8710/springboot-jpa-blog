@@ -1,0 +1,29 @@
+spring:
+  # DB Connection 관련
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/mykimblog
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  # JPA 관련
+  jpa:
+    hibernate:
+      ddl-auto: none # create : 애플리케이션 실행 시점에 테이블을 drop하고, 다시 생성
+    properties:
+      hibernate:
+        # show_sql: true   # System.out에 하이버네이트 실행 SQL을 남김
+        format_sql: true
+        # default_batch_fetch_size: 500 #설정, in (, , , ,) 의 개수, 100 ~ 1000
+        # use_sql_comments: true # querydsl - jpql parameter
+
+  # thymeleaf(View Template)
+  # thymeleaf 추가 시 default
+  #thymeleaf:
+  #  prefix: classpath:/templates/
+  #  suffix: .html
+
+logging:
+  level:
+    org.hibernate.SQL: debug    # Logger를 통해 하이버네이트 실행 SQL을 남김
+    # org.hibernate.type: trace # SQL 실행 파라미터를 로그로 남긴다.
