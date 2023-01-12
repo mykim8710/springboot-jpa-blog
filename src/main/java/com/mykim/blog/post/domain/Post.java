@@ -1,5 +1,6 @@
 package com.mykim.blog.post.domain;
 
+import com.mykim.blog.global.entity.BaseEntity;
 import com.mykim.blog.post.dto.request.RequestPostCreateDto;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Post {
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "POST_ID")
@@ -22,7 +23,7 @@ public class Post {
     @Lob
     private String content;
 
-//    @Enumerated(EnumType.ORDINAL)
+//    @Enumerated(EnumType.STRING)
 //    private PostCategory category;
 
     @Builder
