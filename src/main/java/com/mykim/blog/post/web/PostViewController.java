@@ -1,4 +1,4 @@
-package com.mykim.blog.web;
+package com.mykim.blog.post.web;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

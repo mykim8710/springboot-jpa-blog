@@ -1,0 +1,122 @@
+package com.mykim.blog.post.api;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mykim.blog.global.error.ErrorCode;
+import com.mykim.blog.global.response.SuccessCode;
+import com.mykim.blog.post.domain.Post;
+import com.mykim.blog.post.dto.request.RequestPostCreateDto;
+import com.mykim.blog.post.repository.PostRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
+@AutoConfigureMockMvc // @SpringBootTest에서 MockMvc 객체를 사용하기 위함
+@SpringBootTest
+class PostApiControllerTest {
+    @Autowired
+    MockMvc mockMvc;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
+    PostRepository postRepository;
+
+    @Test
+    @DisplayName("[성공] /api/v1/posts POST 요청 시 글등록이 된다.")
+    @Transactional
+    void createPostApiSuccessTest() throws Exception {
+        // given
+        String api = "/api/v1/posts";
+        RequestPostCreateDto requestPostCreateDto = RequestPostCreateDto
+                                                                    .builder()
+                                                                    .title("title")
+                                                                    .content("content")
+                                                                    .build();
+        String requestDtoJsonStr = objectMapper.writeValueAsString(requestPostCreateDto);
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders.post(api)
+                        .contentType(APPLICATION_JSON)
+                        .content(requestDtoJsonStr)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.status").value(SuccessCode.INSERT.getStatus()))
+                .andExpect(jsonPath("$.code").value(SuccessCode.INSERT.getCode()))
+                .andExpect(jsonPath("$.message").value(SuccessCode.INSERT.getMessage()))
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andDo(MockMvcResultHandlers.print());
+
+        // then
+        long count = postRepository.count();
+        assertThat(count).isEqualTo(1);
+
+        Post findPost = postRepository.findAll().get(0);
+        assertThat(requestPostCreateDto.getTitle()).isEqualTo(findPost.getTitle());
+        assertThat(requestPostCreateDto.getContent()).isEqualTo(findPost.getContent());
+    }
+
+
+    @Test
+    @DisplayName("[성공] /api/v1/posts/{postId} GET 요청 시 글 하나가 조회된다.")
+    @Transactional
+    void selectPostByIdSuccessApi() throws Exception {
+        // given
+        String title = "title";
+        String content = "content";
+
+        Post post = Post.builder()
+                            .title(title)
+                            .content(content)
+                            .build();
+
+        Post savePost = postRepository.save(post);
+
+        String api = "/api/v1/posts/" +savePost.getId();
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get(api)
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.status").value(SuccessCode.COMMON.getStatus()))
+                .andExpect(jsonPath("$.code").value(SuccessCode.COMMON.getCode()))
+                .andExpect(jsonPath("$.message").value(SuccessCode.COMMON.getMessage()))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data.title").value(title))
+                .andExpect(jsonPath("$.data.content").value(content))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("[실패] /api/v1/posts/{postId} GET 요청 시 글 하나가 조회되지 않고 실패한다.")
+    @Transactional
+    void selectPostByIdFailApi() throws Exception {
+        // given
+        String api = "/api/v1/posts/-1";
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get(api)
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(jsonPath("$.status").value(ErrorCode.NOT_FOUND_POST.getStatus()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.NOT_FOUND_POST.getCode()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.NOT_FOUND_POST.getMessage()))
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+
+}
