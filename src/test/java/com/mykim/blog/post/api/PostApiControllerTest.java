@@ -6,6 +6,8 @@ import com.mykim.blog.global.response.SuccessCode;
 import com.mykim.blog.post.domain.Post;
 import com.mykim.blog.post.dto.request.RequestPostCreateDto;
 import com.mykim.blog.post.repository.PostRepository;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -119,4 +126,84 @@ class PostApiControllerTest {
     }
 
 
+    @Test
+    @DisplayName("[성공] /api/v1/posts GET 요청 시 글 전체가 조회된다.")
+    @Transactional
+    void selectPostAllSuccessApi() throws Exception {
+        // given
+        postRepository.saveAll(List.of(
+                Post.builder()
+                        .title("title")
+                        .content("content")
+                        .build(),
+                Post.builder()
+                        .title("title2")
+                        .content("content2")
+                        .build(),
+                Post.builder()
+                        .title("title3")
+                        .content("content3")
+                        .build()
+        ));
+
+        String api = "/api/v1/posts";
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get(api)
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.status").value(SuccessCode.COMMON.getStatus()))
+                .andExpect(jsonPath("$.code").value(SuccessCode.COMMON.getCode()))
+                .andExpect(jsonPath("$.message").value(SuccessCode.COMMON.getMessage()))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data.length()", Matchers.is(3)))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+
+    @Test
+    @DisplayName("[성공] /api/v1/posts GET 요청 시 선택한 페이지의 글이 조회된다.")
+    @Transactional
+    void selectPostAllPaginationSuccessApi() throws Exception {
+        // given
+        /**
+         * 이 코드를 람다식을 사용해서 아래와 같이 사용할 수 있다.
+         for (int i = 0; i < 30>; i++) {
+         Post post = Post.builder().title("title_"+i).content("content_"+i).build();
+         createdPosts.add(post);
+         }
+         **/
+
+        List<Post> createdPosts = IntStream.range(1, 31)
+                .mapToObj(i -> Post.builder()
+                                    .title("title_" +i)
+                                    .content("content_" +i)
+                                    .build()
+                ).collect(Collectors.toList());
+
+        postRepository.saveAll(createdPosts);
+
+
+        String api = "/api/v2/posts";
+
+        // sql limit, offset
+        int page = 0;
+        int size = 5;
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get(api)
+                                              //.contentType(APPLICATION_JSON)
+                        .queryParam("page", String.valueOf(page))
+                        .queryParam("size", String.valueOf(size))
+
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.status").value(SuccessCode.COMMON.getStatus()))
+                .andExpect(jsonPath("$.code").value(SuccessCode.COMMON.getCode()))
+                .andExpect(jsonPath("$.message").value(SuccessCode.COMMON.getMessage()))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data.length()", Matchers.is(size)))
+                .andDo(MockMvcResultHandlers.print());
+    }
 }

@@ -60,7 +60,7 @@
 - Controller Test Code
   - @DisplayName : [성공 or 실패]  api("/api/...") + 요청방식(GET, POST..) + 요청 시 + 원하는 결과 또는 내용(~가 된다.)
     - ex) @DisplayName("[성공] /api/v1/posts POST 요청 시 글등록이 된다.")
-  - functionName : 해당 method name + Test
+  - functionName : 해당 method name +@ + Test
     - void createPostApiSuccessTest()
     
 - Service Test Code
