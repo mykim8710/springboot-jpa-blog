@@ -2,6 +2,14 @@ spring:
   profiles:
     active: local
 
+  # pagination 설정 : spring data jpa에서 page번호를 0부터 시작, 1부터 시작하게 하는 방법
+  # 이 방법은 web에서 page 파라미터를 -1 처리 할 뿐이다.
+  # 응답값인 Page에 모두 0 페이지 인덱스를 사용하는 한계가 있다.
+#  data:
+#    web:
+#      pageable:
+#        one-indexed-parameters: true
+
   # DB Connection 관련
   datasource:
     url: jdbc:h2:tcp://localhost/~/mykimblog
@@ -11,6 +19,7 @@ spring:
 
   # JPA 관련
   jpa:
+
     hibernate:
       ddl-auto: create # create : 애플리케이션 실행 시점에 테이블을 drop하고, 다시 생성
     properties:

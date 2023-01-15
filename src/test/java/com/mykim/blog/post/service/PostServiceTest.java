@@ -9,6 +9,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -108,7 +111,7 @@ class PostServiceTest {
         // when
         List<ResponsePostSelectDto> responsePostSelectDtos = postService.selectPostAll();
 
-        // then
+        // then\
         assertThat(responsePostSelectDtos).isNotNull();
         assertThat(responsePostSelectDtos.size()).isEqualTo(3);
     }
@@ -125,21 +128,19 @@ class PostServiceTest {
                                             ).collect(Collectors.toList());
         postRepository.saveAll(createdPosts);
 
-        int page = 0;   // 0부터 시작
-        int size = 5;
+        int page = 0;   // == offset, 0부터 시작
+        int size = 5;   // == limit
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        PageRequest request = PageRequest.of(page, size, sort);
 
         // when
-        List<ResponsePostSelectDto> responsePostSelectDtos = postService.selectPostAllPagination(page, size);
-        for (ResponsePostSelectDto responsePostSelectDto : responsePostSelectDtos) {
-            System.out.println("responsePostSelectDto = " + responsePostSelectDto);
-        }
+        Page<ResponsePostSelectDto> responsePostSelectDtos = postService.selectPostAllPagination(request);
 
         // then
         assertThat(responsePostSelectDtos).isNotNull();
-        assertThat(responsePostSelectDtos.size()).isEqualTo(5);
-        assertThat(responsePostSelectDtos.get(0).getTitle()).isEqualTo("title_1");
-        assertThat(responsePostSelectDtos.get(4).getTitle()).isEqualTo("title_5");
+        assertThat(responsePostSelectDtos.getContent().size()).isEqualTo(size);
+        assertThat(responsePostSelectDtos.getContent().get(0).getTitle()).isEqualTo("title_1");
+        assertThat(responsePostSelectDtos.getContent().get(4).getTitle()).isEqualTo("title_5");
     }
-
 
 }

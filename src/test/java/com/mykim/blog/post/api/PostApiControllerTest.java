@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -163,7 +165,7 @@ class PostApiControllerTest {
 
 
     @Test
-    @DisplayName("[성공] /api/v1/posts GET 요청 시 선택한 페이지의 글이 조회된다.")
+    @DisplayName("[성공] /api/v2/posts GET 요청 시 선택한 페이지의 글이 조회된다.")
     @Transactional
     void selectPostAllPaginationSuccessApi() throws Exception {
         // given
@@ -187,23 +189,25 @@ class PostApiControllerTest {
 
         String api = "/api/v2/posts";
 
-        // sql limit, offset
+        // sql limit, offset, sort
         int page = 0;
         int size = 5;
+        String sort = "id,asc";
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.get(api)
-                                              //.contentType(APPLICATION_JSON)
                         .queryParam("page", String.valueOf(page))
                         .queryParam("size", String.valueOf(size))
-
+                        .queryParam("sort", sort)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$.status").value(SuccessCode.COMMON.getStatus()))
                 .andExpect(jsonPath("$.code").value(SuccessCode.COMMON.getCode()))
                 .andExpect(jsonPath("$.message").value(SuccessCode.COMMON.getMessage()))
                 .andExpect(jsonPath("$.data").isNotEmpty())
-                .andExpect(jsonPath("$.data.length()", Matchers.is(size)))
+                .andExpect(jsonPath("$.data.content.length()", Matchers.is(size)))
+                .andExpect(jsonPath("$.data.content[0].title").value("title_1"))
+                .andExpect(jsonPath("$.data.content[4].title").value("title_5"))
                 .andDo(MockMvcResultHandlers.print());
     }
 }

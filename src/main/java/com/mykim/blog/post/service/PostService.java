@@ -2,17 +2,20 @@ package com.mykim.blog.post.service;
 
 import com.mykim.blog.post.domain.Post;
 import com.mykim.blog.post.dto.request.RequestPostCreateDto;
+import com.mykim.blog.post.dto.request.RequestPostSelectDto;
 import com.mykim.blog.post.dto.response.ResponsePostSelectDto;
 import com.mykim.blog.post.exception.NotFoundPostException;
+import com.mykim.blog.post.repository.PostQuerydslRepository;
 import com.mykim.blog.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final PostQuerydslRepository postQuerydslRepository;
 
     @Transactional
     public Long createPost(RequestPostCreateDto postCreateDto) {
@@ -51,13 +55,18 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResponsePostSelectDto> selectPostAllPagination(int page, int size) {
-        PageRequest of = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+    public Page<ResponsePostSelectDto> selectPostAllPagination(Pageable pageable) {
+        return postRepository.findAll(pageable).map(post -> new ResponsePostSelectDto(post));
+    }
 
-        return postRepository.findAll(of)
-                .stream()
-                .map(post -> new ResponsePostSelectDto(post))
-                .collect(Collectors.toList());
+
+    @Transactional(readOnly = true)
+    public Page<ResponsePostSelectDto> selectPostAllPaginationQuerydsl(RequestPostSelectDto dto) {
+
+
+
+        return null;
+
     }
 
 }

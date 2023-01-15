@@ -1,6 +1,7 @@
 package com.mykim.blog.post.dto.response;
 
 import com.mykim.blog.post.domain.Post;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -20,6 +21,7 @@ public class ResponsePostSelectDto {
     }
 
     @Builder
+    @QueryProjection
     public ResponsePostSelectDto(Long id, String title, String content) {
         this.id = id;
         this.title = title;

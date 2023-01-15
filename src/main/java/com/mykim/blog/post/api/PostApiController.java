@@ -3,9 +3,12 @@ package com.mykim.blog.post.api;
 import com.mykim.blog.global.response.CommonResult;
 import com.mykim.blog.global.response.SuccessCode;
 import com.mykim.blog.post.dto.request.RequestPostCreateDto;
+import com.mykim.blog.post.dto.request.RequestPostSelectDto;
 import com.mykim.blog.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,27 +45,42 @@ public class PostApiController {
     }
 
     /**
-     * GET /api/v1/posts => 글 전체목록조회
+     * GET /api/v1/posts => 글 목록조회(전체)
      */
     @GetMapping("/api/v1/posts")
     public ResponseEntity<CommonResult> selectPostAllApi() {
-        log.info("[GET] /api/v1/posts  =>  글 전체 목록조회");
+        log.info("[GET] /api/v1/posts  =>  글 목록조회(전체)");
          return ResponseEntity
                 .ok()
                 .body(new CommonResult(SuccessCode.COMMON, postService.selectPostAll()));
     }
 
     /**
-     * GET /api/v2/posts => 글 목록조회(검색 + 페이징 + 정렬)
+     * GET /api/v2/posts => 글 목록조회(페이징 + 정렬)
      */
     @GetMapping("/api/v2/posts")
-    public ResponseEntity<CommonResult> selectPostAllPaginationApi(int page, int size) {
-        log.info("[GET] /api/v2/posts  =>  글 목록조회(검색 + 페이징 + 정렬)");
+    public ResponseEntity<CommonResult> selectPostAllPaginationApi(@PageableDefault Pageable pageable) {
+        log.info("[GET] /api/v2/posts  =>  글 목록조회(페이징 + 정렬)");
+        log.info("pageable = {}" , pageable);
+
         return ResponseEntity
                 .ok()
-                .body(new CommonResult(SuccessCode.COMMON, postService.selectPostAllPagination(page,size)));
+                .body(new CommonResult(SuccessCode.COMMON, postService.selectPostAllPagination(pageable)));
     }
 
+
+    /**
+     * GET /api/v3/posts => 글 목록조회(페이징 + 정렬 + 검색), Querydsl
+     */
+    @GetMapping("/api/v3/posts")
+    public ResponseEntity<CommonResult> selectPostAllPaginationQuerydslApi(RequestPostSelectDto dto) {
+        log.info("[GET] /api/v3/posts  =>  글 목록조회(페이징 + 정렬 + 검색), Querydsl");
+        log.info("RequestPostSelectDto = {}", dto);
+
+        return ResponseEntity
+                .ok()
+                .body(new CommonResult(SuccessCode.COMMON));
+    }
 
 
 
