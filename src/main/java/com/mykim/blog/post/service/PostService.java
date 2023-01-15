@@ -63,9 +63,22 @@ public class PostService {
     @Transactional(readOnly = true)
     public Page<ResponsePostSelectDto> selectPostAllPaginationQuerydsl(RequestPostSelectDto dto) {
 
+        Integer page = dto.getPage();
+        Integer size = dto.getSize();   // == limit
+        long offset = dto.getOffset();
+        String keyword = dto.getKeyword();
+        //String sortCondition = dto.getSortCondition();
 
 
-        return null;
+
+        //PageRequest request = PageRequest.of();
+
+
+
+
+
+
+        return postQuerydslRepository.findPostSearchPagination(dto);
 
     }
 

@@ -1,16 +1,14 @@
 package com.mykim.blog.post.repository;
 
-import com.mykim.blog.post.domain.QPost;
 import com.mykim.blog.post.dto.request.RequestPostSelectDto;
 import com.mykim.blog.post.dto.response.QResponsePostSelectDto;
 import com.mykim.blog.post.dto.response.ResponsePostSelectDto;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -26,7 +24,7 @@ public class PostQuerydslRepository {
     public Page<ResponsePostSelectDto> findPostSearchPagination(RequestPostSelectDto dto) {
         List<ResponsePostSelectDto> responsePostSelectDtos = queryFactory.select(new QResponsePostSelectDto(post.id, post.title, post.content))
                                                     .from(post)
-                                                    .where(titleLike(dto.getKeyword()).or(contentLike(dto.getKeyword())))
+                                                    .where(createUniversalSearchCondition(dto.getKeyword()))
                                                     .offset(dto.getOffset())
                                                     .limit(dto.getSize())
                                                     .orderBy(post.id.desc())
@@ -34,44 +32,25 @@ public class PostQuerydslRepository {
 
         Long count = queryFactory.select(post.count())
                                     .from(post)
-                                    .where(titleLike(dto.getKeyword()).or(contentLike(dto.getKeyword())))
+                                    .where(createUniversalSearchCondition(dto.getKeyword()))
                                     .fetchOne();
 
-        return new PageImpl<>(responsePostSelectDtos, null, count);
+        return new PageImpl<>(responsePostSelectDtos, PageRequest.of(1,5), count);
     }
 
 
 
     private BooleanExpression titleLike(String keyword) {
-        return !StringUtils.hasLength(keyword) ? null : post.title.like(keyword);
+        return !StringUtils.hasLength(keyword) ? null : post.title.contains(keyword); // like : keyword, contains : %keyword%
     }
 
     private BooleanExpression contentLike(String keyword) {
-        return !StringUtils.hasLength(keyword) ? null : post.content.like(keyword);
+        return !StringUtils.hasLength(keyword) ? null : post.content.contains(keyword);
     }
 
-//    private BooleanExpression sortCondition(String sortCondition) {
-//        // id,asc or desc
-//
-//        //sortCondition.split(",")
-//
-//        if(!StringUtils.hasLength(sortCondition)) {
-//            return null;
-//        }
-//
-//        String[] split = sortCondition.split(",");
-//
-//        String sort = split[0];
-//        String order = split[1];
-//
-//        if (sort.equals("id")) {
-//            NumberPath<Long> id = post.id;
-//        }
-//
-//        if (sort.equals("title")) {
-//            post.title
-//        }
-//
-//
-//    }
+    private BooleanExpression createUniversalSearchCondition(String keyword) {
+        return !StringUtils.hasLength(keyword) ? null : titleLike(keyword).or(contentLike(keyword));
+    }
+
+
 }

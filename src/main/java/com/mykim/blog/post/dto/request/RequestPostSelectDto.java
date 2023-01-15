@@ -10,16 +10,18 @@ import lombok.ToString;
 @ToString
 @Builder
 public class RequestPostSelectDto {
+    private static final int MAX_SIZE = 2000;
+
     @Builder.Default
     private Integer page = 1;
     @Builder.Default
     private Integer size = 10;
 
     private String keyword;
-    private String sortCondition;   // desc, asc
+    //private String sortCondition;   // desc, asc
 
     public long getOffset() {
-        return (long) (page - 1) * size;
+        return (long) (Math.max(1, page) - 1) * Math.min(size, MAX_SIZE);
     }
 
 }

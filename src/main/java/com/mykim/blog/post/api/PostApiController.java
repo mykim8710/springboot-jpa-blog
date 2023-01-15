@@ -73,13 +73,14 @@ public class PostApiController {
      * GET /api/v3/posts => 글 목록조회(페이징 + 정렬 + 검색), Querydsl
      */
     @GetMapping("/api/v3/posts")
-    public ResponseEntity<CommonResult> selectPostAllPaginationQuerydslApi(RequestPostSelectDto dto) {
+    public ResponseEntity<CommonResult> selectPostAllPaginationQuerydslApi(RequestPostSelectDto dto, Pageable pageable) {
         log.info("[GET] /api/v3/posts  =>  글 목록조회(페이징 + 정렬 + 검색), Querydsl");
         log.info("RequestPostSelectDto = {}", dto);
+        log.info("Pageable = {}", pageable);
 
         return ResponseEntity
                 .ok()
-                .body(new CommonResult(SuccessCode.COMMON));
+                .body(new CommonResult(SuccessCode.COMMON, postService.selectPostAllPaginationQuerydsl(dto)));
     }
 
 
