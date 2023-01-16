@@ -1,6 +1,6 @@
 package com.mykim.blog.post.domain;
 
-import com.mykim.blog.global.entity.BaseEntity;
+import com.mykim.blog.global.entity.BaseTimeEntity;
 import com.mykim.blog.post.dto.request.RequestPostCreateDto;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Post extends BaseEntity {
+public class Post extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "POST_ID")
@@ -39,5 +39,9 @@ public class Post extends BaseEntity {
                         .build();
     }
 
+    public void editPost(PostEditor postEditor) {
+        this.title = postEditor.getTitle();
+        this.content = postEditor.getContent();
+    }
 }
 

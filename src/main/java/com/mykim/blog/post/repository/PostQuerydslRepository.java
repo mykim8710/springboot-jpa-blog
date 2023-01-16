@@ -1,17 +1,19 @@
 package com.mykim.blog.post.repository;
 
-import com.mykim.blog.post.dto.request.RequestPostSelectDto;
+import com.mykim.blog.post.domain.Post;
 import com.mykim.blog.post.dto.response.QResponsePostSelectDto;
 import com.mykim.blog.post.dto.response.ResponsePostSelectDto;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.mykim.blog.post.domain.QPost.post;
@@ -21,21 +23,25 @@ import static com.mykim.blog.post.domain.QPost.post;
 public class PostQuerydslRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Page<ResponsePostSelectDto> findPostSearchPagination(RequestPostSelectDto dto) {
+    public Page<ResponsePostSelectDto> findPostSearchPagination(Pageable pageable, String keyword) {
         List<ResponsePostSelectDto> responsePostSelectDtos = queryFactory.select(new QResponsePostSelectDto(post.id, post.title, post.content))
                                                     .from(post)
-                                                    .where(createUniversalSearchCondition(dto.getKeyword()))
-                                                    .offset(dto.getOffset())
-                                                    .limit(dto.getSize())
-                                                    .orderBy(post.id.desc())
+                                                    .where(createUniversalSearchCondition(keyword))
+                                                    .offset(pageable.getOffset())
+                                                    .limit(pageable.getPageSize())
+                                                    .orderBy(getOrderSpecifier(pageable.getSort())
+                                                                    .stream()
+                                                                    .toArray(OrderSpecifier[]::new)
+                                                    )
+
                                                     .fetch();
 
         Long count = queryFactory.select(post.count())
                                     .from(post)
-                                    .where(createUniversalSearchCondition(dto.getKeyword()))
+                                    .where(createUniversalSearchCondition(keyword))
                                     .fetchOne();
 
-        return new PageImpl<>(responsePostSelectDtos, PageRequest.of(1,5), count);
+        return new PageImpl<>(responsePostSelectDtos, pageable, count);
     }
 
 
@@ -52,5 +58,17 @@ public class PostQuerydslRepository {
         return !StringUtils.hasLength(keyword) ? null : titleLike(keyword).or(contentLike(keyword));
     }
 
+    private List<OrderSpecifier> getOrderSpecifier(Sort sort) {
+        List<OrderSpecifier> orders = new ArrayList<>();
+
+        sort.stream().forEach (order -> {
+            Order direction = order.isAscending() ? Order.ASC : Order.DESC;
+            String orderProperty = order.getProperty();
+            PathBuilder orderByExpression = new PathBuilder(Post.class, "post");
+            orders.add(new OrderSpecifier(direction, orderByExpression.get(orderProperty)));
+        });
+
+        return orders;
+    }
 
 }

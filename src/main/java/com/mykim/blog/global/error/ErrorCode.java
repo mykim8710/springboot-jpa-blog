@@ -9,7 +9,9 @@ public enum ErrorCode {
     
     VALIDATION_ERROR(400, "V001", "validation error"),
 
-    NOT_FOUND_POST(400, "P001", "not found this post")
+    NOT_FOUND_POST(404, "P001", "not found this post"),
+
+    DUPLICATE_USERNAME(400, "M001", "This username is exist.")
 
     ;
 

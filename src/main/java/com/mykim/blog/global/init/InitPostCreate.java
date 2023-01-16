@@ -5,6 +5,7 @@ import com.mykim.blog.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.usertype.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Profile("local")
 @RequiredArgsConstructor
 @Component
 public class InitPostCreate {

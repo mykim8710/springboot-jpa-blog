@@ -18,8 +18,9 @@
   - Lombok
   - H2 Database
   - Thymeleaf
+  - Querydsl
 
-## Project Convention
+## Code Convention
 [package.name] => all.lower.case(전부 소문자)
 
 [ClassName] => PascalCase(대문자로 시작)
@@ -51,13 +52,13 @@
 [variableName] => camelCase(소문자로 시작)
 
 
-[Test Code]
+## Test Code Rule
 - default form
   - given : ~ 이 주어지고
   - when  : ~ 이것을 실행했을때
   - then  : ~ 결과가 이것이 나와야 된다.
 
-- Controller Test Code
+- Controller Test Code : 전체 로직 테스트
   - @DisplayName : [성공 or 실패]  api("/api/...") + 요청방식(GET, POST..) + 요청 시 + 원하는 결과 또는 내용(~가 된다.)
     - ex) @DisplayName("[성공] /api/v1/posts POST 요청 시 글등록이 된다.")
   - functionName : 해당 method name +@ + Test
@@ -69,9 +70,18 @@
   - functionName : 해당 method name +Success or Fail + Test
     - void createPostSuccessTest()
 
+## Rest API naming Rule
+- /api/v1,2,3... /domain + s/+@
+- GET    : 조회
+- POST   : 등록 및 수정 및 삭제..... 
+- PATCH  : 수정
+- DELETE : 삭제
 
 
-[Response json form]
+
+
+
+## Response json form
 - Error, Success 모두 동일한 class로 사용
 ```
 public class CommonResult<T> {
@@ -90,23 +100,6 @@ public class CommonResult<T> {
     "data": {...} or [...] or null
 }
 ```
-
-## Bean Validation annotation
-- at dto, in controller
-  - @Valid 
-- at field in class
-  - @NotBlank(message = "") : null, "", "...." 모두체크 => 가장강력
-  - @NotEmpty(message = "") : null, "" 체크("..."는 체크안함)
-  - @NotNull(message = "")  : null만 체크("", "..."는 체크안함)
-  - @Min(message = "")      : 최소값 지정(@Size의 min과 동일)
-  - @Max(message = "")      : 최대값 지정(@Size의 max과 동일)
-  - @Email(message = "")    : 이메일 형식 체크
-  - @Size(min = , max = , message = "") : 최소, 최대 사이즈를 지정 
-  - .....
-
-
-
-
 
 
 

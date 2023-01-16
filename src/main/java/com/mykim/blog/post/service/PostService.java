@@ -1,10 +1,14 @@
 package com.mykim.blog.post.service;
 
+import com.mykim.blog.global.error.ErrorCode;
+import com.mykim.blog.global.error.exception.NotFoundException;
+import com.mykim.blog.global.pagination.CustomPaginationRequest;
+import com.mykim.blog.global.pagination.CustomSortingRequest;
 import com.mykim.blog.post.domain.Post;
+import com.mykim.blog.post.domain.PostEditor;
 import com.mykim.blog.post.dto.request.RequestPostCreateDto;
-import com.mykim.blog.post.dto.request.RequestPostSelectDto;
+import com.mykim.blog.post.dto.request.RequestPostUpdateDto;
 import com.mykim.blog.post.dto.response.ResponsePostSelectDto;
-import com.mykim.blog.post.exception.NotFoundPostException;
 import com.mykim.blog.post.repository.PostQuerydslRepository;
 import com.mykim.blog.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,14 +40,8 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public ResponsePostSelectDto selectPostById(Long postId) {
-        Post findPost = postRepository.findById(postId)
-                                        .orElseThrow(() -> new NotFoundPostException());
-
-        return ResponsePostSelectDto.builder()
-                                        .id(findPost.getId())
-                                        .title(findPost.getTitle())
-                                        .content(findPost.getContent())
-                                        .build();
+        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST));
+        return new ResponsePostSelectDto(findPost);
     }
 
     @Transactional(readOnly = true)
@@ -59,27 +57,29 @@ public class PostService {
         return postRepository.findAll(pageable).map(post -> new ResponsePostSelectDto(post));
     }
 
-
     @Transactional(readOnly = true)
-    public Page<ResponsePostSelectDto> selectPostAllPaginationQuerydsl(RequestPostSelectDto dto) {
-
-        Integer page = dto.getPage();
-        Integer size = dto.getSize();   // == limit
-        long offset = dto.getOffset();
-        String keyword = dto.getKeyword();
-        //String sortCondition = dto.getSortCondition();
-
-
-
-        //PageRequest request = PageRequest.of();
-
-
-
-
-
-
-        return postQuerydslRepository.findPostSearchPagination(dto);
-
+    public Page<ResponsePostSelectDto> selectPostAllPaginationQuerydsl(CustomPaginationRequest paginationRequest, CustomSortingRequest sortingRequest, String keyword) {
+        PageRequest pageRequest = PageRequest.of(paginationRequest.getPage() - 1, paginationRequest.getSize(), Sort.by(sortingRequest.of()));
+        return postQuerydslRepository.findPostSearchPagination(pageRequest, keyword);
     }
+
+    @Transactional
+    public void editPostById(Long postId, RequestPostUpdateDto dto) {
+        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST));
+
+        // create PostEditor
+        PostEditor postEditor = PostEditor.builder()
+                                            .title(dto.getTitle() == null ? findPost.getTitle() : dto.getTitle())
+                                            .content(dto.getContent() == null ? findPost.getContent() : dto.getContent())
+                                            .build();
+        findPost.editPost(postEditor);
+    }
+
+    @Transactional
+    public void removePostById(Long postId) {
+        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST));
+        postRepository.delete(findPost);
+    }
+
 
 }

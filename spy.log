@@ -1,1 +1,2 @@
-1673526564141|0|statement|connection 15|url jdbc:h2:mem:75972367-01c6-4d82-acf0-dba9d9c264b0|drop table if exists post CASCADE |drop table if exists post CASCADE 
+1673872668989|0|statement|connection 35|url jdbc:h2:mem:a8d008ae-62c8-47d8-8346-9490a07461ee|drop table if exists member CASCADE |drop table if exists member CASCADE 
+1673872668989|0|statement|connection 35|url jdbc:h2:mem:a8d008ae-62c8-47d8-8346-9490a07461ee|drop table if exists post CASCADE |drop table if exists post CASCADE 

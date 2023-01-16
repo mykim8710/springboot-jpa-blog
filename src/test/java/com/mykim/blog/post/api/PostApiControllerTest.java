@@ -5,24 +5,22 @@ import com.mykim.blog.global.error.ErrorCode;
 import com.mykim.blog.global.response.SuccessCode;
 import com.mykim.blog.post.domain.Post;
 import com.mykim.blog.post.dto.request.RequestPostCreateDto;
+import com.mykim.blog.post.dto.request.RequestPostUpdateDto;
 import com.mykim.blog.post.repository.PostRepository;
-import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -76,11 +74,10 @@ class PostApiControllerTest {
         assertThat(requestPostCreateDto.getContent()).isEqualTo(findPost.getContent());
     }
 
-
     @Test
     @DisplayName("[성공] /api/v1/posts/{postId} GET 요청 시 글 하나가 조회된다.")
     @Transactional
-    void selectPostByIdSuccessApi() throws Exception {
+    void selectPostByIdApiSuccessTest() throws Exception {
         // given
         String title = "title";
         String content = "content";
@@ -92,10 +89,10 @@ class PostApiControllerTest {
 
         Post savePost = postRepository.save(post);
 
-        String api = "/api/v1/posts/" +savePost.getId();
+        String api = "/api/v1/posts/{postId}";
 
         // when & then
-        mockMvc.perform(MockMvcRequestBuilders.get(api)
+        mockMvc.perform(MockMvcRequestBuilders.get(api, savePost.getId())
                         .contentType(APPLICATION_JSON)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -109,17 +106,16 @@ class PostApiControllerTest {
     }
 
     @Test
-    @DisplayName("[실패] /api/v1/posts/{postId} GET 요청 시 글 하나가 조회되지 않고 실패한다.")
+    @DisplayName("[실패] /api/v1/posts/{postId} GET 요청 시 글 하나가 조회되지 않고 NotFoundPostException이 발생한다.존재하지 않는 글)")
     @Transactional
-    void selectPostByIdFailApi() throws Exception {
+    void selectPostByIdApiFailTest() throws Exception {
         // given
-        String api = "/api/v1/posts/-1";
+        String api = "/api/v1/posts/{postId}";
 
         // when & then
-        mockMvc.perform(MockMvcRequestBuilders.get(api)
-                        .contentType(APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+        mockMvc.perform(MockMvcRequestBuilders.get(api, -1)
+                        .contentType(APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(jsonPath("$.status").value(ErrorCode.NOT_FOUND_POST.getStatus()))
                 .andExpect(jsonPath("$.code").value(ErrorCode.NOT_FOUND_POST.getCode()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.NOT_FOUND_POST.getMessage()))
@@ -127,11 +123,10 @@ class PostApiControllerTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
-
     @Test
     @DisplayName("[성공] /api/v1/posts GET 요청 시 글 전체가 조회된다.")
     @Transactional
-    void selectPostAllSuccessApi() throws Exception {
+    void selectPostAllApiSuccessTest() throws Exception {
         // given
         postRepository.saveAll(List.of(
                 Post.builder()
@@ -163,11 +158,10 @@ class PostApiControllerTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
-
     @Test
     @DisplayName("[성공] /api/v2/posts GET 요청 시 선택한 페이지의 글이 조회된다.")
     @Transactional
-    void selectPostAllPaginationSuccessApi() throws Exception {
+    void selectPostAllPaginationApiSuccessTest() throws Exception {
         // given
         /**
          * 이 코드를 람다식을 사용해서 아래와 같이 사용할 수 있다.
@@ -208,6 +202,173 @@ class PostApiControllerTest {
                 .andExpect(jsonPath("$.data.content.length()", Matchers.is(size)))
                 .andExpect(jsonPath("$.data.content[0].title").value("title_1"))
                 .andExpect(jsonPath("$.data.content[4].title").value("title_5"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("[성공] /api/v3/posts GET 요청 시 선택한 페이지의 글이 조회된다.")
+    @Transactional
+    void selectPostAllPaginationQuerydslApiSuccessTest() throws Exception {
+        // given
+        /**
+         * 이 코드를 람다식을 사용해서 아래와 같이 사용할 수 있다.
+         for (int i = 0; i < 30>; i++) {
+         Post post = Post.builder().title("title_"+i).content("content_"+i).build();
+         createdPosts.add(post);
+         }
+         **/
+
+        List<Post> createdPosts = IntStream.range(1, 31)
+                                            .mapToObj(i -> Post.builder()
+                                                    .title("title_" +i)
+                                                    .content("content_" +i)
+                                                    .build()
+                                            ).collect(Collectors.toList());
+
+        postRepository.saveAll(createdPosts);
+
+
+        String api = "/api/v3/posts";
+
+        // sql limit, offset, sort, search
+        int page = 2;
+        int size = 10;
+        String sort = "id,desc";
+        String keyword = "";
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get(api)
+                        .queryParam("page", String.valueOf(page))
+                        .queryParam("size", String.valueOf(size))
+                        .queryParam("sort", sort)
+                        .queryParam("keyword", keyword)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.status").value(SuccessCode.COMMON.getStatus()))
+                .andExpect(jsonPath("$.code").value(SuccessCode.COMMON.getCode()))
+                .andExpect(jsonPath("$.message").value(SuccessCode.COMMON.getMessage()))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data.content.length()", Matchers.is(size)))
+                .andExpect(jsonPath("$.data.content[0].title").value("title_20"))
+                .andExpect(jsonPath("$.data.content[4].title").value("title_16"))
+                .andExpect(jsonPath("$.data.content[9].title").value("title_11"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("[성공] /api/v1/posts/{postId} PATCH 요청 시 글이 수정된다.")
+    @Transactional
+    void editPostByIdApiSuccessTest() throws Exception {
+        // given
+        RequestPostCreateDto requestPostCreateDto = RequestPostCreateDto
+                                                            .builder()
+                                                            .title("title")
+                                                            .content("content")
+                                                            .build();
+        Post post = Post.createPost(requestPostCreateDto);
+        postRepository.save(post);
+
+        String updateTitle = "update_title";
+        String updateContent = "update_content";
+        RequestPostUpdateDto postUpdateDto = RequestPostUpdateDto
+                                                        .builder()
+                                                        .title(updateTitle)
+                                                        .content(updateContent)
+                                                        .build();
+
+        String postUpdateDtoJsonStr = objectMapper.writeValueAsString(postUpdateDto);
+        String api = "/api/v1/posts/{postId}";
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.patch(api, post.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(postUpdateDtoJsonStr)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.status").value(SuccessCode.UPDATE.getStatus()))
+                .andExpect(jsonPath("$.code").value(SuccessCode.UPDATE.getCode()))
+                .andExpect(jsonPath("$.message").value(SuccessCode.UPDATE.getMessage()))
+                .andDo(MockMvcResultHandlers.print());
+
+
+        Post findPost = postRepository.findById(post.getId()).get();
+        assertThat(findPost.getTitle()).isEqualTo(updateTitle);
+        assertThat(findPost.getContent()).isEqualTo(updateContent);
+    }
+
+    @Test
+    @DisplayName("[실패] /api/v1/posts/{postId} PATCH 요청 시 글 하나가 수정되지 않고 NotFoundPostException이 발생한다.(존재하지 않는 글)")
+    @Transactional
+    void editPostByIdApiFailTest() throws Exception {
+        // given
+        String updateTitle = "update_title";
+        String updateContent = "update_content";
+        RequestPostUpdateDto postUpdateDto = RequestPostUpdateDto
+                                                        .builder()
+                                                        .title(updateTitle)
+                                                        .content(updateContent)
+                                                        .build();
+
+        String postUpdateDtoJsonStr = objectMapper.writeValueAsString(postUpdateDto);
+        String api = "/api/v1/posts/{postId}";
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.patch(api, -1)
+                        .contentType(APPLICATION_JSON)
+                        .content(postUpdateDtoJsonStr))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(jsonPath("$.status").value(ErrorCode.NOT_FOUND_POST.getStatus()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.NOT_FOUND_POST.getCode()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.NOT_FOUND_POST.getMessage()))
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("[성공] /api/v1/posts/{postId} DELETE 요청 시 글이 삭제된다.")
+    @Transactional
+    void removePostByIdApiSuccessTest() throws Exception {
+        // given
+        RequestPostCreateDto requestPostCreateDto = RequestPostCreateDto
+                                                                .builder()
+                                                                .title("title")
+                                                                .content("content")
+                                                                .build();
+        Post post = Post.createPost(requestPostCreateDto);
+        postRepository.save(post);
+
+        String api = "/api/v1/posts/{postId}";
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.delete(api,  post.getId())
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.status").value(SuccessCode.DELETE.getStatus()))
+                .andExpect(jsonPath("$.code").value(SuccessCode.DELETE.getCode()))
+                .andExpect(jsonPath("$.message").value(SuccessCode.DELETE.getMessage()))
+                .andDo(MockMvcResultHandlers.print());
+
+        Optional<Post> optionalFindPost = postRepository.findById(post.getId());
+        assertThat(optionalFindPost).isEmpty();
+
+    }
+
+    @Test
+    @DisplayName("[실패] /api/v1/posts/{postId} DELETE 요청 시 글 하나가 삭제되지 않고 실패한다.(존재하지 않는 글)")
+    @Transactional
+    void removePostByIdApiFailTest() throws Exception {
+        // given
+        String api = "/api/v1/posts/{postId}";
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.delete(api, -1)
+                        .contentType(APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(jsonPath("$.status").value(ErrorCode.NOT_FOUND_POST.getStatus()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.NOT_FOUND_POST.getCode()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.NOT_FOUND_POST.getMessage()))
+                .andExpect(jsonPath("$.data").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
     }
 }

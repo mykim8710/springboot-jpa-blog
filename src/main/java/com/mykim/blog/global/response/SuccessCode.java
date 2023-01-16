@@ -10,6 +10,8 @@ public enum SuccessCode {
     COMMON(200, "", "OK"),
 
     INSERT(200, "", "insert ok"),
+    UPDATE(200, "", "update ok"),
+    DELETE(200, "", "delete ok"),
 
     ;
 

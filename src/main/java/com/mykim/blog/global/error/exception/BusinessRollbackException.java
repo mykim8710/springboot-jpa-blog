@@ -1,9 +1,10 @@
-package com.mykim.blog.global.error;
+package com.mykim.blog.global.error.exception;
 
+import com.mykim.blog.global.error.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class BusinessRollbackException extends RuntimeException {
+public abstract class BusinessRollbackException extends RuntimeException {
     private ErrorCode errorCode;
 
     public BusinessRollbackException(String message, ErrorCode errorCode) {

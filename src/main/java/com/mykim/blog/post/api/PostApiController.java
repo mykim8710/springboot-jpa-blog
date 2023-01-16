@@ -1,9 +1,11 @@
 package com.mykim.blog.post.api;
 
+import com.mykim.blog.global.pagination.CustomPaginationRequest;
+import com.mykim.blog.global.pagination.CustomSortingRequest;
 import com.mykim.blog.global.response.CommonResult;
 import com.mykim.blog.global.response.SuccessCode;
 import com.mykim.blog.post.dto.request.RequestPostCreateDto;
-import com.mykim.blog.post.dto.request.RequestPostSelectDto;
+import com.mykim.blog.post.dto.request.RequestPostUpdateDto;
 import com.mykim.blog.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +36,11 @@ public class PostApiController {
     }
 
     /**
-     * GET /api/v1/posts/{postId} => 글 하나 조회(단건조회)
+     * GET /api/v1/posts/{postId} => 글 조회(단건조회)
      */
     @GetMapping("/api/v1/posts/{postId}")
     public ResponseEntity<CommonResult> selectPostByIdApi(@PathVariable Long postId) {
-        log.info("[GET] /api/v1/posts/{postId}  =>  글 하나 조회", postId);
+        log.info("[GET] /api/v1/posts/{postId}  =>  글 조회(단건조회)", postId);
         return ResponseEntity
                 .ok()
                 .body(new CommonResult(SuccessCode.COMMON, postService.selectPostById(postId)));
@@ -73,18 +75,42 @@ public class PostApiController {
      * GET /api/v3/posts => 글 목록조회(페이징 + 정렬 + 검색), Querydsl
      */
     @GetMapping("/api/v3/posts")
-    public ResponseEntity<CommonResult> selectPostAllPaginationQuerydslApi(RequestPostSelectDto dto, Pageable pageable) {
-        log.info("[GET] /api/v3/posts  =>  글 목록조회(페이징 + 정렬 + 검색), Querydsl");
-        log.info("RequestPostSelectDto = {}", dto);
-        log.info("Pageable = {}", pageable);
+    public ResponseEntity<CommonResult> selectPostAllPaginationQuerydslApi(CustomPaginationRequest paginationRequest, CustomSortingRequest sortingRequest, String keyword) {
+        log.info("[GET] /api/v3/posts  =>  글 목록조회(페이징 + 정렬 + 검색, Querydsl)");
+        log.info("CustomPaginationRequest = {}", paginationRequest);
+        log.info("CustomSortingRequest = {}", sortingRequest);
+        log.info("keyword = {}", keyword);
 
         return ResponseEntity
                 .ok()
-                .body(new CommonResult(SuccessCode.COMMON, postService.selectPostAllPaginationQuerydsl(dto)));
+                .body(new CommonResult(SuccessCode.COMMON, postService.selectPostAllPaginationQuerydsl(paginationRequest, sortingRequest, keyword)));
+    }
+
+    /**
+     * PATCH  /api/v1/posts/{postId}  => 글 수정
+     */
+    @PatchMapping("/api/v1/posts/{postId}")
+    public ResponseEntity<CommonResult> editPostByIdApi(@PathVariable Long postId, @RequestBody @Valid RequestPostUpdateDto dto) {
+        log.info("[PATCH] /api/v1/posts/{}  =>  글 수정", postId);
+        log.info("RequestPostUpdateDto = {]", dto);
+        postService.editPostById(postId, dto);
+        return ResponseEntity
+                .ok()
+                .body(new CommonResult(SuccessCode.UPDATE));
     }
 
 
-
+    /**
+     * DELETE  /api/v1/posts/{postId}  => 글 수정
+     */
+    @DeleteMapping("/api/v1/posts/{postId}")
+    public ResponseEntity<CommonResult> removePostByIdApi(@PathVariable Long postId) {
+        log.info("[DELETE] /api/v1/posts/{}  =>  글 삭제", postId);
+        postService.removePostById(postId);
+        return ResponseEntity
+                .ok()
+                .body(new CommonResult(SuccessCode.DELETE));
+    }
 
 }
 

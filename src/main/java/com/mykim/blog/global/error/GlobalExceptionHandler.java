@@ -1,5 +1,6 @@
 package com.mykim.blog.global.error;
 
+import com.mykim.blog.global.error.exception.BusinessRollbackException;
 import com.mykim.blog.global.response.CommonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -8,13 +9,9 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.mykim.blog.global.error.ErrorCode.VALIDATION_ERROR;
 
@@ -66,16 +63,22 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * @Service Exception : Business Rollback
+     * @Service Exception : BusinessRollbackException
+     * {
+     *     status : 400,404,....
+     *     code : "",.....
+     *     message : "",.....
+     *     data : null
+     * }
      */
     @ExceptionHandler(BusinessRollbackException.class)
-    public ResponseEntity<CommonResult> BusinessRollbackExceptionHandler(BusinessRollbackException e) {
+    public ResponseEntity<CommonResult> businessRollbackExceptionHandler(BusinessRollbackException e) {
         log.error(e.getErrorCode().getCode() + " : " + e.getErrorCode().getMessage());
         final ErrorCode errorCode = e.getErrorCode();
 
         CommonResult commonResult = new CommonResult(errorCode);
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(errorCode.getStatus())
                 .body(commonResult);
     }
 
