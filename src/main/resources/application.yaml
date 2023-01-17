@@ -19,7 +19,6 @@ spring:
 
   # JPA 관련
   jpa:
-
     hibernate:
       ddl-auto: create # create : 애플리케이션 실행 시점에 테이블을 drop하고, 다시 생성
     properties:
@@ -27,7 +26,14 @@ spring:
         # show_sql: true   # System.out에 하이버네이트 실행 SQL을 남김
         format_sql: true
         # default_batch_fetch_size: 500 #설정, in (, , , ,) 의 개수, 100 ~ 1000
-        # use_sql_comments: true # querydsl - jpql parameter
+        use_sql_comments: true # querydsl - jpql parameter
+    defer-datasource-initialization: true #app 실행 시 data.sql 실행
+
+  #app 실행 시 data.sql 실행
+  sql:
+    init:
+      mode: always
+
 
   # thymeleaf(View Template)
   # 아래는 thymeleaf dependency를 build.gradle에 추가하면 default로 설정되어있다.

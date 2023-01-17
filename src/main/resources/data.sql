@@ -1,0 +1,34 @@
+insert into `member`(email, username, password, created_date, last_Modified_date) values ('mykim@google.com', 'mykim', '1111', now(), now());
+insert into `member`(email, username, password, created_date, last_Modified_date) values ('test@test.com', 'test', '1111', now(), now());
+
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_1', 'content_1', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_2', 'content_2', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_3', 'content_3', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_4', 'content_4', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_5', 'content_5', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_6', 'content_6', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_7', 'content_7', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_8', 'content_8', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_9', 'content_9', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_10', 'content_10', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_11', 'content_11', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_12', 'content_12', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_13', 'content_13', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_14', 'content_14', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_15', 'content_15', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_16', 'content_16', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_17', 'content_17', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_18', 'content_18', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_19', 'content_19', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_20', 'content_20', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_21', 'content_21', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_22', 'content_22', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_23', 'content_23', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_24', 'content_24', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_25', 'content_25', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_26', 'content_26', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_27', 'content_27', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_28', 'content_28', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_29', 'content_29', now(), now());
+insert into `post`(title, content, created_date, last_Modified_date) values ('title_30', 'content_30', now(), now());
+

@@ -20,7 +20,6 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RestController
 public class PostApiController {
-
     private final PostService postService;
 
     /**
@@ -70,12 +69,13 @@ public class PostApiController {
                 .body(new CommonResult(SuccessCode.COMMON, postService.selectPostAllPagination(pageable)));
     }
 
-
     /**
      * GET /api/v3/posts => 글 목록조회(페이징 + 정렬 + 검색), Querydsl
      */
     @GetMapping("/api/v3/posts")
-    public ResponseEntity<CommonResult> selectPostAllPaginationQuerydslApi(CustomPaginationRequest paginationRequest, CustomSortingRequest sortingRequest, String keyword) {
+    public ResponseEntity<CommonResult> selectPostAllPaginationQuerydslApi(@ModelAttribute CustomPaginationRequest paginationRequest,
+                                                                           @ModelAttribute CustomSortingRequest sortingRequest,
+                                                                           @RequestParam String keyword) {
         log.info("[GET] /api/v3/posts  =>  글 목록조회(페이징 + 정렬 + 검색, Querydsl)");
         log.info("CustomPaginationRequest = {}", paginationRequest);
         log.info("CustomSortingRequest = {}", sortingRequest);
@@ -98,7 +98,6 @@ public class PostApiController {
                 .ok()
                 .body(new CommonResult(SuccessCode.UPDATE));
     }
-
 
     /**
      * DELETE  /api/v1/posts/{postId}  => 글 수정

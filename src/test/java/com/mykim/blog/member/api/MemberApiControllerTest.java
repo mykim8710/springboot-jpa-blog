@@ -36,19 +36,21 @@ class MemberApiControllerTest {
     MemberRepository memberRepository;
 
     @Test
-    @DisplayName("[성공] /api/v1/members POST 요청 시 새로운 사용자가 등록된다.")
+    @DisplayName("[성공] /api/v1/members/sign-up POST 요청 시 새로운 사용자가 등록된다.")
     @Transactional
-    void createMemberApiSuccessTest() throws Exception {
+    void signUpMemberApiSuccessTest() throws Exception {
         // given
-        String username = "test";
+        String email = "mykim@google.com";
         String password = "1111";
+        String username = "1111";
 
         RequestMemberInsertDto memberInsertDto = RequestMemberInsertDto.builder()
-                                                                        .username(username)
+                                                                        .email(email)
                                                                         .password(password)
+                                                                        .username(username)
                                                                         .build();
 
-        String api = "/api/v1/members";
+        String api = "/api/v1/members/sign-up";
         String requestDtoJsonStr = objectMapper.writeValueAsString(memberInsertDto);
 
         // when
@@ -65,22 +67,26 @@ class MemberApiControllerTest {
 
         // then
         long count = memberRepository.count();
+        System.out.println("count = " + count);
         assertThat(count).isEqualTo(1);
 
         Member findMember = memberRepository.findAll().get(0);
-        assertThat(memberInsertDto.getUsername()).isEqualTo(findMember.getUsername());
+        System.out.println("findMember = " + findMember);
+        assertThat(memberInsertDto.getEmail()).isEqualTo(findMember.getEmail());
         assertThat(memberInsertDto.getPassword()).isEqualTo(findMember.getPassword());
     }
 
     @Test
-    @DisplayName("[실패] /api/v1/members POST 요청 시 이미 등록된 사용자로 인해 DuplicateMemberUsernameException이 발생한다.")
+    @DisplayName("[실패] /api/v1/members/sign-up POST 요청 시 이미 등록된 사용자로 인해 DuplicateMemberUsernameException이 발생한다.")
     @Transactional
-    void createMemberApiFailTest() throws Exception {
+    void signUpMemberApiFailTest() throws Exception {
         // given
-        String username = "test";
+        String email = "test@test.com";
         String password = "1111";
+        String username = "1111";
 
         RequestMemberInsertDto memberInsertDto = RequestMemberInsertDto.builder()
+                                                                            .email(email)
                                                                             .username(username)
                                                                             .password(password)
                                                                             .build();
@@ -88,7 +94,7 @@ class MemberApiControllerTest {
         memberRepository.save(member);
 
 
-        String api = "/api/v1/members";
+        String api = "/api/v1/members/sign-up";
         String requestDtoJsonStr = objectMapper.writeValueAsString(memberInsertDto);
 
         // when & then
@@ -97,27 +103,29 @@ class MemberApiControllerTest {
                         .content(requestDtoJsonStr)
                 )
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())
-                .andExpect(jsonPath("$.status").value(ErrorCode.DUPLICATE_USERNAME.getStatus()))
-                .andExpect(jsonPath("$.code").value(ErrorCode.DUPLICATE_USERNAME.getCode()))
-                .andExpect(jsonPath("$.message").value(ErrorCode.DUPLICATE_USERNAME.getMessage()))
+                .andExpect(jsonPath("$.status").value(ErrorCode.DUPLICATE_USER_EMAIL.getStatus()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.DUPLICATE_USER_EMAIL.getCode()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.DUPLICATE_USER_EMAIL.getMessage()))
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    @DisplayName("[실패] /api/v1/members POST 요청 시 dto validation 실패로  발생한다.")
+    @DisplayName("[실패] /api/v1/members/sign-up POST 요청 시 dto validation 실패로  발생한다.")
     @Transactional
-    void createMemberApiValidationFailTest() throws Exception {
+    void signUpMemberApiValidationFailTest() throws Exception {
         // given
+        String email = "asd";
         String username = "";
         String password = null;
 
         RequestMemberInsertDto memberInsertDto = RequestMemberInsertDto.builder()
+                                                                            .email(email)
                                                                             .username(username)
                                                                             .password(password)
                                                                             .build();
 
-        String api = "/api/v1/members";
+        String api = "/api/v1/members/sign-up";
         String requestDtoJsonStr = objectMapper.writeValueAsString(memberInsertDto);
 
         // when & then

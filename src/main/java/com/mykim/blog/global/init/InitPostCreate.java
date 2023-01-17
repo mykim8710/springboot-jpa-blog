@@ -19,7 +19,7 @@ import java.util.stream.IntStream;
 
 @Profile("local")
 @RequiredArgsConstructor
-@Component
+//@Component
 public class InitPostCreate {
     private final InitPostCreateService initPostCreateService;
 

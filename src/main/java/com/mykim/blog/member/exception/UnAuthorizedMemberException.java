@@ -5,9 +5,9 @@ import com.mykim.blog.global.error.exception.BusinessRollbackException;
 import lombok.Getter;
 
 @Getter
-public class DuplicateMemberUsernameException extends BusinessRollbackException {
+public class UnAuthorizedMemberException extends BusinessRollbackException {
     private final ErrorCode errorCode;
-    public DuplicateMemberUsernameException(ErrorCode errorCode) {
+    public UnAuthorizedMemberException(ErrorCode errorCode) {
         super(errorCode);
         this.errorCode = errorCode;
     }

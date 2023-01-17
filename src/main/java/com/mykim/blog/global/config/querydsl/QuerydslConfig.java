@@ -1,4 +1,4 @@
-package com.mykim.blog.global.config;
+package com.mykim.blog.global.config.querydsl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.context.annotation.Bean;

@@ -2,7 +2,9 @@ package com.mykim.blog.member.service;
 
 import com.mykim.blog.member.domain.Member;
 import com.mykim.blog.member.dto.request.RequestMemberInsertDto;
-import com.mykim.blog.member.exception.DuplicateMemberUsernameException;
+import com.mykim.blog.member.dto.request.RequestMemberSignInDto;
+import com.mykim.blog.member.exception.DuplicateMemberEmailException;
+import com.mykim.blog.member.exception.InvalidSignInInfoException;
 import com.mykim.blog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.mykim.blog.global.error.ErrorCode.DUPLICATE_USERNAME;
+import static com.mykim.blog.global.error.ErrorCode.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,19 +22,17 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Long createMember(RequestMemberInsertDto memberInsertDto) {
-        duplicateMemberUsername(memberInsertDto.getUsername()); // validation : duplicate username
+    public Long signUpMember(RequestMemberInsertDto memberInsertDto) {
+        duplicateMemberEmail(memberInsertDto.getEmail()); // validation : duplicate username
         Member member = Member.createMember(memberInsertDto);
         memberRepository.save(member);
         return member.getId();
     }
 
-    private void duplicateMemberUsername(String username) {
-        Optional<Member> byUsername = memberRepository.findByUsername(username);
+    private void duplicateMemberEmail(String email) {
+        Optional<Member> byUsername = memberRepository.findByEmail(email);
         if(byUsername.isPresent()) {
-            throw new DuplicateMemberUsernameException(DUPLICATE_USERNAME);
+            throw new DuplicateMemberEmailException(DUPLICATE_USER_EMAIL);
         }
     }
-
-
 }

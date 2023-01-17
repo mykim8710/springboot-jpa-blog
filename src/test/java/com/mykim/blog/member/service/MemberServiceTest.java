@@ -3,7 +3,7 @@ package com.mykim.blog.member.service;
 import com.mykim.blog.global.error.ErrorCode;
 import com.mykim.blog.member.domain.Member;
 import com.mykim.blog.member.dto.request.RequestMemberInsertDto;
-import com.mykim.blog.member.exception.DuplicateMemberUsernameException;
+import com.mykim.blog.member.exception.DuplicateMemberEmailException;
 import com.mykim.blog.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,48 +25,53 @@ class MemberServiceTest {
     @Test
     @DisplayName("[성공] MemberService, createMember() 실행하면 새로운 사용자가 등록된다.")
     @Transactional
-    void createMemberSuccessTest() throws Exception {
+    void signUpMemberSuccessTest() throws Exception {
         // given
-        String username = "test";
+        String email = "test@test.com";
         String password = "1111";
+        String username = "test";
 
         RequestMemberInsertDto memberInsertDto = RequestMemberInsertDto.builder()
+                                                                        .email(email)
                                                                         .username(username)
                                                                         .password(password)
                                                                         .build();
 
         // when
-        Long createdMemberId = memberService.createMember(memberInsertDto);
+        Long createdMemberId = memberService.signUpMember(memberInsertDto);
 
         // then
         Member findMember = memberRepository.findById(createdMemberId).get();
-        assertThat(findMember.getUsername()).isEqualTo(username);
+        assertThat(findMember.getEmail()).isEqualTo(email);
         assertThat(findMember.getPassword()).isEqualTo(password);
     }
 
     @Test
     @DisplayName("[실패] MemberService, createMember() 실행하면 이미 등록된 사용자로 인해 DuplicateMemberUsernameException이 발생한다.")
     @Transactional
-    void createMemberFailTest() throws Exception {
+    void signUpMemberFailTest() throws Exception {
         // given
-        String username = "test";
+        String email = "test@test.com";
         String password = "1111";
+        String username = "test";
 
         RequestMemberInsertDto memberInsertDto = RequestMemberInsertDto.builder()
+                                                                            .email(email)
                                                                             .username(username)
                                                                             .password(password)
                                                                             .build();
-        memberService.createMember(memberInsertDto);
+        memberService.signUpMember(memberInsertDto);
 
         // when & then
         RequestMemberInsertDto memberInsertDto2 = RequestMemberInsertDto.builder()
+                                                                            .email(email)
                                                                             .username(username)
                                                                             .password(password)
                                                                             .build();
 
-        assertThatThrownBy(() -> memberService.createMember(memberInsertDto2))
-                .isInstanceOf(DuplicateMemberUsernameException.class)
-                .hasMessage(ErrorCode.DUPLICATE_USERNAME.getMessage());
+        assertThatThrownBy(() -> memberService.signUpMember(memberInsertDto2))
+                .isInstanceOf(DuplicateMemberEmailException.class)
+                .hasMessage(ErrorCode.DUPLICATE_USER_EMAIL.getMessage());
     }
 
 }

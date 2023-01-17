@@ -75,6 +75,33 @@ class PostApiControllerTest {
     }
 
     @Test
+    @DisplayName("[실패] /api/v1/posts POST 요청 시 제목, 내용 값이 필수이므로 글등록이 실패한다.")
+    @Transactional
+    void createPostApiFailTest() throws Exception {
+        // given
+        String api = "/api/v1/posts";
+        RequestPostCreateDto requestPostCreateDto = RequestPostCreateDto
+                                                                .builder()
+                                                                .title("")
+                                                                .content(null)
+                                                                .build();
+        String requestDtoJsonStr = objectMapper.writeValueAsString(requestPostCreateDto);
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.post(api)
+                        .contentType(APPLICATION_JSON)
+                        .content(requestDtoJsonStr)
+                )
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(jsonPath("$.status").value(ErrorCode.VALIDATION_ERROR.getStatus()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_ERROR.getCode()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.VALIDATION_ERROR.getMessage()))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data.length()", Matchers.is(2)))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     @DisplayName("[성공] /api/v1/posts/{postId} GET 요청 시 글 하나가 조회된다.")
     @Transactional
     void selectPostByIdApiSuccessTest() throws Exception {
@@ -106,7 +133,7 @@ class PostApiControllerTest {
     }
 
     @Test
-    @DisplayName("[실패] /api/v1/posts/{postId} GET 요청 시 글 하나가 조회되지 않고 NotFoundPostException이 발생한다.존재하지 않는 글)")
+    @DisplayName("[실패] /api/v1/posts/{postId} GET 요청 시 글 하나가 조회되지 않고 NotFoundPostException이 발생한다.(존재하지 않는 글)")
     @Transactional
     void selectPostByIdApiFailTest() throws Exception {
         // given

@@ -1,2 +1,6 @@
 1673872668989|0|statement|connection 35|url jdbc:h2:mem:a8d008ae-62c8-47d8-8346-9490a07461ee|drop table if exists member CASCADE |drop table if exists member CASCADE 
 1673872668989|0|statement|connection 35|url jdbc:h2:mem:a8d008ae-62c8-47d8-8346-9490a07461ee|drop table if exists post CASCADE |drop table if exists post CASCADE 
+1673920148183|2|statement|connection 35|url jdbc:h2:mem:d9ec6789-4aeb-4741-b105-6a451fb84c90|drop table if exists member CASCADE |drop table if exists member CASCADE 
+1673920148184|0|statement|connection 35|url jdbc:h2:mem:d9ec6789-4aeb-4741-b105-6a451fb84c90|drop table if exists post CASCADE |drop table if exists post CASCADE 
+1673933009309|1|statement|connection 14|url jdbc:h2:mem:490ee052-a476-44fd-aa61-a55fc4ae800a|drop table if exists member CASCADE |drop table if exists member CASCADE 
+1673933009310|0|statement|connection 14|url jdbc:h2:mem:490ee052-a476-44fd-aa61-a55fc4ae800a|drop table if exists post CASCADE |drop table if exists post CASCADE 

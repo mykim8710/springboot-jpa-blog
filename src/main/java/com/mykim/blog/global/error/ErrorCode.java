@@ -11,7 +11,11 @@ public enum ErrorCode {
 
     NOT_FOUND_POST(404, "P001", "not found this post"),
 
-    DUPLICATE_USERNAME(400, "M001", "This username is exist.")
+    DUPLICATE_USER_EMAIL(400, "M001", "This email is exist."),
+
+    UNAUTHORIZED_MEMBER(401, "M002", "You need authorization."),
+
+    INVALID_SIGN_IN_INFO(400, "M003", "email or password is not matched."),
 
     ;
 
