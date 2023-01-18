@@ -5,6 +5,9 @@ import com.mykim.blog.global.authorization.dto.request.RequestAuthorizationDto;
 import com.mykim.blog.global.authorization.dto.response.ResponseAuthorizationDto;
 import com.mykim.blog.global.authorization.service.AuthorizationService;
 import com.mykim.blog.global.response.CommonResult;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -15,12 +18,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.crypto.SecretKey;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import java.security.Key;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Base64;
 
 import static com.mykim.blog.global.response.SuccessCode.SIGN_IN;
 import static com.mykim.blog.global.response.SuccessCode.SIGN_OUT;
@@ -29,20 +35,27 @@ import static com.mykim.blog.global.response.SuccessCode.SIGN_OUT;
 @RequiredArgsConstructor
 @RestController
 public class AuthorizationApiController {
-
     private final AuthorizationService authorizationService;
+    private static final String KEY = "jiS48dIGRtD73A/st4gd8SxL7AHSdkPtNb7oO9p22rI=";
 
     @GetMapping("/api/v1/auth/foo")
     public String fooAuthorizationTestApi(@CustomAuthorization ResponseAuthorizationDto authorizationDto) {
-        log.info("[GET] /api/auth/foo  {}");
+        log.info("[GET] /api/v1/auth/foo  {}");
+        log.info("authorizationMemberDto = {}" ,authorizationDto);
+        return "인증이 필요한 api : 인증성공";
+    }
+
+    @GetMapping("/api/v2/auth/foo")
+    public String fooAuthorizationWithJwtTestApi(@CustomAuthorization ResponseAuthorizationDto authorizationDto) {
+        log.info("[GET] /api/v2/auth/foo  {}");
         log.info("authorizationMemberDto = {}" ,authorizationDto);
         return "인증이 필요한 api : 인증성공";
     }
 
     @GetMapping("/api/v1/auth/bar")
     public String barAuthorizationTestApi() {
-        log.info("[GET] /api/auth/bar");
-        return "인증이 필요없는 페이지";
+        log.info("[GET] /api/v1/auth/bar");
+        return "인증이 필요없는 api";
     }
 
 
@@ -95,7 +108,32 @@ public class AuthorizationApiController {
                             .body(new CommonResult(SIGN_OUT));
     }
 
+    /**
+     * POST /api/v2/auth/sign-in  =>  로그인, jwt
+     */
+    @PostMapping("/api/v2/auth/sign-in")
+    public String signInWithJwtApi(@RequestBody @Valid RequestAuthorizationDto authorizationDto) {
+        log.info("[POST] /api/v2/auth/sign-in");
+        log.info("RequestAuthorizationDto = {}", authorizationDto);
 
 
+        // We need a signing key, so we'll create one just for this example.
+        // Usually the key would be read from your application configuration instead.
+        //Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        /*byte[] encodedKey = key.getEncoded();
+        String strKey = Base64.getEncoder().encodeToString(encodedKey);
+        System.out.println("strKey = " + strKey);   //jiS48dIGRtD73A/st4gd8SxL7AHSdkPtNb7oO9p22rI=*/
+
+        SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(KEY));
+
+        String jws = Jwts.builder()
+                            .setSubject("Joe")
+                            .signWith(key)
+                            .compact();
+
+        System.out.println("jws = " + jws);
+
+        return jws;
+    }
 
 }

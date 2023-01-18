@@ -1,4 +1,4 @@
-### sign in
+### sign in version1 session, cookie
 
 POST http://localhost:8080/api/v1/auth/sign-in
 Content-Type: application/json
@@ -10,3 +10,19 @@ Content-Type: application/json
 
 
 
+### sign in version2 with JWT
+
+POST http://localhost:8080/api/v2/auth/sign-in
+Content-Type: application/json
+
+{
+  "email" : "test@test.com",
+  "password" : "1111"
+}
+
+
+### auth Test with JWT
+
+GET http://localhost:8080/api/v2/auth/foo
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKb2UifQ.Mm68P3GA60D0nHHVW-v6wEPXA88IJfaC_cydt0VMrMo

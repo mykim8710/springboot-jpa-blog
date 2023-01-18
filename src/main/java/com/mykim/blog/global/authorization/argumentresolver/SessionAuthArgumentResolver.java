@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
-public class AuthorizationArgumentResolver implements HandlerMethodArgumentResolver {
+public class SessionAuthArgumentResolver implements HandlerMethodArgumentResolver {
     private final AuthorizationSessionRepository memberSessionRepository;
 
     @Override
