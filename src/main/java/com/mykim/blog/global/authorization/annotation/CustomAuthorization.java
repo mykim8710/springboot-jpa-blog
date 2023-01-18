@@ -1,4 +1,4 @@
-package com.mykim.blog.global.config.authorization.annotation;
+package com.mykim.blog.global.authorization.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

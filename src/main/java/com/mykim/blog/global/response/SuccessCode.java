@@ -10,6 +10,7 @@ public enum SuccessCode {
     COMMON(200, "", "OK"),
 
     SIGN_IN(200, "", "sign in success"),
+    SIGN_OUT(200, "", "sign out success"),
 
     INSERT(200, "", "insert ok"),
     UPDATE(200, "", "update ok"),

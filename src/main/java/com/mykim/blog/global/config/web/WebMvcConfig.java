@@ -1,7 +1,7 @@
 package com.mykim.blog.global.config.web;
 
-import com.mykim.blog.global.config.authorization.argumentresolver.AuthorizationArgumentResolver;
-import com.mykim.blog.member.repository.MemberSessionRepository;
+import com.mykim.blog.global.authorization.argumentresolver.AuthorizationArgumentResolver;
+import com.mykim.blog.global.authorization.repository.AuthorizationSessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -12,7 +12,7 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
-    private final MemberSessionRepository memberSessionRepository;
+    private final AuthorizationSessionRepository memberSessionRepository;
 
     // interceptor
 //    @Override

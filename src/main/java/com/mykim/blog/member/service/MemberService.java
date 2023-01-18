@@ -2,9 +2,7 @@ package com.mykim.blog.member.service;
 
 import com.mykim.blog.member.domain.Member;
 import com.mykim.blog.member.dto.request.RequestMemberInsertDto;
-import com.mykim.blog.member.dto.request.RequestMemberSignInDto;
 import com.mykim.blog.member.exception.DuplicateMemberEmailException;
-import com.mykim.blog.member.exception.InvalidSignInInfoException;
 import com.mykim.blog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

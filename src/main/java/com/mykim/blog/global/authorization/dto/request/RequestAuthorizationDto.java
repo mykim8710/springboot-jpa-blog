@@ -1,4 +1,4 @@
-package com.mykim.blog.member.dto.request;
+package com.mykim.blog.global.authorization.dto.request;
 
 import lombok.*;
 
@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
-public class RequestMemberSignInDto {
+public class RequestAuthorizationDto {
     @NotBlank(message = "계정을 입력해주세요.")
     @Email(message = "이메일형식이 아닙니다.")
     private String email;
@@ -17,7 +17,7 @@ public class RequestMemberSignInDto {
     private String password;
 
     @Builder
-    public RequestMemberSignInDto(String email, String password) {
+    public RequestAuthorizationDto(String email, String password) {
         this.email = email;
         this.password = password;
     }
