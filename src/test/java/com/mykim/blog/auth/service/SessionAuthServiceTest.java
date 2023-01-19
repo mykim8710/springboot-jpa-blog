@@ -1,7 +1,7 @@
-package com.mykim.blog.global.authorization.service;
+package com.mykim.blog.auth.service;
 
-import com.mykim.blog.global.authorization.domain.AuthorizationSession;
-import com.mykim.blog.global.authorization.repository.AuthorizationSessionRepository;
+import com.mykim.blog.auth.domain.AuthSession;
+import com.mykim.blog.auth.repository.AuthSessionRepository;
 import com.mykim.blog.member.domain.Member;
 import com.mykim.blog.member.repository.MemberRepository;
 import org.assertj.core.api.Assertions;
@@ -11,22 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 @Transactional
-class AuthorizationServiceTest {
+class SessionAuthServiceTest {
     @Autowired
-    AuthorizationService authorizationService;
+    SessionAuthService authorizationService;
 
     @Autowired
-    AuthorizationSessionRepository authorizationSessionRepository;
+    AuthSessionRepository authorizationSessionRepository;
 
     @Autowired
     MemberRepository memberRepository;
 
     @Test
-    @DisplayName("[성공] AuthorizationService createAuthorizationSession() 실행하면 새로운 AuthorizationSession이 등록된다.")
+    @DisplayName("[성공] SessionAuthService createAuthorizationSession() 실행하면 새로운 AuthorizationSession이 등록된다.")
     void createAuthorizationSessionSuccessTest() {
         // given
         String email = "aaa@aaa.com";
@@ -41,10 +39,10 @@ class AuthorizationServiceTest {
         memberRepository.save(member);
 
         // when
-        AuthorizationSession authorizationSession = authorizationService.createAuthorizationSession(member);
+        AuthSession authorizationSession = authorizationService.createAuthSession(member);
 
         // then
-        AuthorizationSession findAuthSession = authorizationSessionRepository.findById(authorizationSession.getId()).get();
+        AuthSession findAuthSession = authorizationSessionRepository.findById(authorizationSession.getId()).get();
         Assertions.assertThat(findAuthSession.getAccessToken()).isEqualTo(authorizationSession.getAccessToken());
     }
 

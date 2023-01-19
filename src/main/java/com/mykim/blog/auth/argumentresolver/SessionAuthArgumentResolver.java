@@ -1,12 +1,12 @@
-package com.mykim.blog.global.authorization.argumentresolver;
+package com.mykim.blog.auth.argumentresolver;
 
-import com.mykim.blog.global.authorization.domain.AuthorizationSession;
-import com.mykim.blog.global.authorization.dto.response.ResponseAuthorizationDto;
-import com.mykim.blog.global.authorization.annotation.CustomAuthorization;
+import com.mykim.blog.auth.annotation.CustomSessionAuthorization;
+import com.mykim.blog.auth.domain.AuthSession;
+import com.mykim.blog.auth.dto.response.ResponseAuthDto;
 import com.mykim.blog.global.error.ErrorCode;
 import com.mykim.blog.member.domain.Member;
 import com.mykim.blog.member.exception.UnAuthorizedMemberException;
-import com.mykim.blog.global.authorization.repository.AuthorizationSessionRepository;
+import com.mykim.blog.auth.repository.AuthSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -23,16 +23,16 @@ import java.util.Arrays;
 @Slf4j
 @RequiredArgsConstructor
 public class SessionAuthArgumentResolver implements HandlerMethodArgumentResolver {
-    private final AuthorizationSessionRepository memberSessionRepository;
+    private final AuthSessionRepository authSessionRepository;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        boolean hasCustomAuthorizationAnnotation = parameter.hasParameterAnnotation(CustomAuthorization.class);
-        boolean hasSignInMemberType = ResponseAuthorizationDto.class.isAssignableFrom(parameter.getParameterType());
+        boolean hasCustomAuthorizationAnnotation = parameter.hasParameterAnnotation(CustomSessionAuthorization.class);
+        boolean hasSignInMemberType = ResponseAuthDto.class.isAssignableFrom(parameter.getParameterType());
         return hasCustomAuthorizationAnnotation && hasSignInMemberType;
     }
 
-    // 인증 시 작동 @CustomAuthorization ResponseAuthorizationDto responseAuthorizationMemberDto 있는 Controller 메서드
+    // 인증 시 작동 @CustomSessionAuthorization ResponseAuthDto responseAuthorizationMemberDto 있는 Controller 메서드
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest)webRequest.getNativeRequest();
@@ -54,21 +54,21 @@ public class SessionAuthArgumentResolver implements HandlerMethodArgumentResolve
 
 
         /**
-         *  DB 확인 : AuthorizationSession 검증
+         *  DB 확인 : AuthSession 검증
          */
-        AuthorizationSession authorizationSession = memberSessionRepository.findByAccessToken(authCookie.getValue())
+        AuthSession authSession = authSessionRepository.findByAccessToken(authCookie.getValue())
                                             .orElseThrow(() -> new UnAuthorizedMemberException(ErrorCode.UNAUTHORIZED_MEMBER));
 
         // 토큰 만료일 검증
-        if(authorizationSession.getTokenExpirationTime().isBefore(LocalDateTime.now()) || !authorizationSession.isActive()) {
+        if(authSession.getTokenExpirationTime().isBefore(LocalDateTime.now()) || !authSession.isActive()) {
             throw new UnAuthorizedMemberException(ErrorCode.UNAUTHORIZED_MEMBER);
         }
 
-        Member member = authorizationSession.getMember();
-        return ResponseAuthorizationDto.builder()
-                                            .memberId(member.getId())
-                                            .email(member.getEmail())
-                                            .username(member.getUsername())
-                                            .build();
+        Member member = authSession.getMember();
+        return ResponseAuthDto.builder()
+                                .memberId(member.getId())
+                                .email(member.getEmail())
+                                .username(member.getUsername())
+                                .build();
     }
 }

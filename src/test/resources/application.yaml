@@ -6,3 +6,7 @@ spring:
   sql:
     init:
       mode: never
+
+## jwt 설정
+custom-jwt:
+  key: "jiS48dIGRtD73A/st4gd8SxL7AHSdkPtNb7oO9p22rI="

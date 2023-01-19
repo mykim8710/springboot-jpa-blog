@@ -1,8 +1,10 @@
 package com.mykim.blog.global.config.web;
 
-import com.mykim.blog.global.authorization.argumentresolver.JwtAuthArgumentResolver;
-import com.mykim.blog.global.authorization.argumentresolver.SessionAuthArgumentResolver;
-import com.mykim.blog.global.authorization.repository.AuthorizationSessionRepository;
+import com.mykim.blog.auth.argumentresolver.JwtAuthArgumentResolver;
+import com.mykim.blog.auth.argumentresolver.SessionAuthArgumentResolver;
+import com.mykim.blog.auth.config.JwtConfig;
+import com.mykim.blog.auth.repository.AuthSessionRepository;
+import com.mykim.blog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -13,7 +15,9 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
-    private final AuthorizationSessionRepository memberSessionRepository;
+    private final AuthSessionRepository memberSessionRepository;
+    private final MemberRepository memberRepository;
+    private final JwtConfig jwtConfig;
 
     // interceptor
 //    @Override
@@ -26,9 +30,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     // ArgumentResolver
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        //resolvers.add(new SessionAuthArgumentResolver(memberSessionRepository));
-        resolvers.add(new JwtAuthArgumentResolver());
-
-
+        resolvers.add(new SessionAuthArgumentResolver(memberSessionRepository));
+        resolvers.add(new JwtAuthArgumentResolver(memberRepository, jwtConfig));
     }
 }

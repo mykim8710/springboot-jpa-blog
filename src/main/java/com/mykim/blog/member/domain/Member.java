@@ -9,7 +9,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(exclude = "authorizationSession")
 public class Member extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MEMBER_ID")
@@ -17,9 +16,6 @@ public class Member extends BaseTimeEntity {
     private String email;
     private String password;
     private String username;
-
-//    @OneToOne(mappedBy = "member")
-//    private AuthorizationSession authorizationSession;
 
     @Builder
     public Member(String username, String email, String password) {

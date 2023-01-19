@@ -1,4 +1,4 @@
-package com.mykim.blog.global.authorization.annotation;
+package com.mykim.blog.auth.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CustomAuthorization {
+public @interface CustomJwtAuthorization {
 }

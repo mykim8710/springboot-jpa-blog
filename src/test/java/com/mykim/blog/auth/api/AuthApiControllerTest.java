@@ -1,11 +1,11 @@
-package com.mykim.blog.global.authorization.api;
+package com.mykim.blog.auth.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mykim.blog.global.authorization.domain.AuthorizationSession;
-import com.mykim.blog.global.authorization.dto.request.RequestAuthorizationDto;
+import com.mykim.blog.auth.domain.AuthSession;
+import com.mykim.blog.auth.dto.request.RequestAuthDto;
 import com.mykim.blog.member.domain.Member;
 import com.mykim.blog.member.repository.MemberRepository;
-import com.mykim.blog.global.authorization.repository.AuthorizationSessionRepository;
+import com.mykim.blog.auth.repository.AuthSessionRepository;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc // @SpringBootTest에서 MockMvc 객체를 사용하기 위함
 @SpringBootTest
-class AuthorizationApiControllerTest {
+class AuthApiControllerTest {
     @Autowired
     MockMvc mockMvc;
 
@@ -40,7 +40,7 @@ class AuthorizationApiControllerTest {
     MemberRepository memberRepository;
 
     @Autowired
-    AuthorizationSessionRepository authorizationSessionRepository;
+    AuthSessionRepository authSessionRepository;
 
     @Test
     @DisplayName("[성공] /api/v1/auth/sign-in POST 요청 시 로그인 성공")
@@ -60,7 +60,7 @@ class AuthorizationApiControllerTest {
 
         String api = "/api/v1/auth/sign-in";
 
-        RequestAuthorizationDto memberSignInDto = RequestAuthorizationDto.builder()
+        RequestAuthDto memberSignInDto = RequestAuthDto.builder()
                                                                             .email(email)
                                                                             .password(password)
                                                                             .build();
@@ -94,12 +94,12 @@ class AuthorizationApiControllerTest {
 
         String api = "/api/v1/auth/sign-in";
 
-        RequestAuthorizationDto memberSignInDto = RequestAuthorizationDto.builder()
-                                                                            .email("aa@aa.com")
-                                                                            .password("aaaaa")
-                                                                            .build();
+        RequestAuthDto authDto = RequestAuthDto.builder()
+                                                    .email("aa@aa.com")
+                                                    .password("aaaaa")
+                                                    .build();
 
-        String requestDtoJsonStr = objectMapper.writeValueAsString(memberSignInDto);
+        String requestDtoJsonStr = objectMapper.writeValueAsString(authDto);
 
         // when
         mockMvc.perform(MockMvcRequestBuilders.post(api)
@@ -131,19 +131,19 @@ class AuthorizationApiControllerTest {
 
         memberRepository.save(member);
 
-        AuthorizationSession authorizationSession = AuthorizationSession.builder()
-                                                                            .member(member)
-                                                                            .build();
-        authorizationSessionRepository.save(authorizationSession);
+        AuthSession authSession = AuthSession.builder()
+                                                .member(member)
+                                                .build();
+        authSessionRepository.save(authSession);
 
 
         String api = "/api/v1/auth/sign-in";
-        RequestAuthorizationDto memberSignInDto = RequestAuthorizationDto.builder()
-                                                                        .email(email)
-                                                                        .password(password)
-                                                                        .build();
+        RequestAuthDto authDto = RequestAuthDto.builder()
+                                                .email(email)
+                                                .password(password)
+                                                .build();
 
-        String requestDtoJsonStr = objectMapper.writeValueAsString(memberSignInDto);
+        String requestDtoJsonStr = objectMapper.writeValueAsString(authDto);
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.post(api)
@@ -151,7 +151,7 @@ class AuthorizationApiControllerTest {
                                 .content(requestDtoJsonStr)
                         )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.cookie().value("AUTHORIZATION_SESSION", authorizationSessionRepository.findByMemberId(member.getId()).get().getAccessToken()))
+                .andExpect(MockMvcResultMatchers.cookie().value("AUTHORIZATION_SESSION", authSessionRepository.findByMemberId(member.getId()).get().getAccessToken()))
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -171,19 +171,19 @@ class AuthorizationApiControllerTest {
                                     .build();
         memberRepository.save(member);
 
-        AuthorizationSession oldAuthSession = AuthorizationSession.builder()
-                                                                    .member(member)
-                                                                    .build();
-        authorizationSessionRepository.save(oldAuthSession);
-        oldAuthSession.deactivateAuthorizationSession();
+        AuthSession oldAuthSession = AuthSession.builder()
+                                                .member(member)
+                                                .build();
+        authSessionRepository.save(oldAuthSession);
+        oldAuthSession.deactivateAuthSession();
 
         String api = "/api/v1/auth/sign-in";
-        RequestAuthorizationDto memberSignInDto = RequestAuthorizationDto.builder()
-                                                                            .email(email)
-                                                                            .password(password)
-                                                                            .build();
+        RequestAuthDto authDto = RequestAuthDto.builder()
+                                                    .email(email)
+                                                    .password(password)
+                                                    .build();
 
-        String requestDtoJsonStr = objectMapper.writeValueAsString(memberSignInDto);
+        String requestDtoJsonStr = objectMapper.writeValueAsString(authDto);
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.post(api)
@@ -191,7 +191,7 @@ class AuthorizationApiControllerTest {
                         .content(requestDtoJsonStr)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.cookie().value("AUTHORIZATION_SESSION", authorizationSessionRepository.findByMemberId(member.getId()).get().getAccessToken()))
+                .andExpect(MockMvcResultMatchers.cookie().value("AUTHORIZATION_SESSION", authSessionRepository.findByMemberId(member.getId()).get().getAccessToken()))
                 .andDo(MockMvcResultHandlers.print());
 
         Assertions.assertThat(oldAuthSession.isActive()).isEqualTo(false);
@@ -231,17 +231,17 @@ class AuthorizationApiControllerTest {
                                 .build();
         memberRepository.save(member);
 
-        AuthorizationSession authorizationSession = AuthorizationSession.builder()
-                                                                            .member(member)
-                                                                            .build();
-        authorizationSessionRepository.save(authorizationSession);
+        AuthSession authSession = AuthSession.builder()
+                                                .member(member)
+                                                .build();
+        authSessionRepository.save(authSession);
 
         String api = "/api/v1/auth/foo";
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.get(api)
                         //.header(HttpHeaders.COOKIE, "AUTHORIZATION_SESSION="+ // X
-                        .cookie(new Cookie("AUTHORIZATION_SESSION", authorizationSession.getAccessToken()))
+                        .cookie(new Cookie("AUTHORIZATION_SESSION", authSession.getAccessToken()))
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("인증이 필요한 api : 인증성공"))
@@ -265,17 +265,17 @@ class AuthorizationApiControllerTest {
 
         memberRepository.save(member);
 
-        AuthorizationSession authorizationSession = AuthorizationSession.builder()
-                                                                            .member(member)
-                                                                            .build();
-        authorizationSessionRepository.save(authorizationSession);
+        AuthSession authSession = AuthSession.builder()
+                                                .member(member)
+                                                .build();
+        authSessionRepository.save(authSession);
 
         String api = "/api/v1/auth/sign-out";
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.get(api)
                         .contentType(APPLICATION_JSON)
-                        .cookie(new Cookie("AUTHORIZATION_SESSION", authorizationSession.getAccessToken()))
+                        .cookie(new Cookie("AUTHORIZATION_SESSION", authSession.getAccessToken()))
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$.status").value(SIGN_OUT.getStatus()))
@@ -284,9 +284,8 @@ class AuthorizationApiControllerTest {
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
 
-        AuthorizationSession findAuthToken = authorizationSessionRepository.findByAccessToken(authorizationSession.getAccessToken()).get();
+        AuthSession findAuthToken = authSessionRepository.findByAccessToken(authSession.getAccessToken()).get();
         Assertions.assertThat(findAuthToken.isActive()).isFalse();
     }
-
 
 }
