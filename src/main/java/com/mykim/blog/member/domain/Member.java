@@ -17,11 +17,16 @@ public class Member extends BaseTimeEntity {
     private String password;
     private String username;
 
+    @Enumerated(EnumType.STRING)
+    //@Column(name = "MEMBER_ROLE")
+    private MemberRole memberRole;
+
     @Builder
-    public Member(String username, String email, String password) {
+    public Member(String username, String email, String password, MemberRole memberRole) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.memberRole = memberRole;
     }
 
     public static Member createMember(RequestMemberInsertDto memberInsertDto) {
@@ -29,6 +34,7 @@ public class Member extends BaseTimeEntity {
                         .email(memberInsertDto.getEmail())
                         .password(memberInsertDto.getPassword())
                         .username(memberInsertDto.getUsername())
+                        .memberRole(memberInsertDto.getMemberRole())
                         .build();
     }
 }

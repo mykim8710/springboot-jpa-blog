@@ -1,8 +1,8 @@
 package com.mykim.blog.post.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mykim.blog.global.error.ErrorCode;
-import com.mykim.blog.global.response.SuccessCode;
+import com.mykim.blog.global.result.error.ErrorCode;
+import com.mykim.blog.global.result.SuccessCode;
 import com.mykim.blog.post.domain.Post;
 import com.mykim.blog.post.dto.request.RequestPostCreateDto;
 import com.mykim.blog.post.dto.request.RequestPostUpdateDto;

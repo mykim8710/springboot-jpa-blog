@@ -1,7 +1,7 @@
 package com.mykim.blog.post.service;
 
-import com.mykim.blog.global.error.ErrorCode;
-import com.mykim.blog.global.error.exception.NotFoundException;
+import com.mykim.blog.global.result.error.ErrorCode;
+import com.mykim.blog.global.result.error.exception.NotFoundException;
 import com.mykim.blog.global.pagination.CustomPaginationRequest;
 import com.mykim.blog.global.pagination.CustomSortingRequest;
 import com.mykim.blog.post.domain.Post;

@@ -1,11 +1,11 @@
 package com.mykim.blog.auth.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mykim.blog.auth.domain.AuthSession;
-import com.mykim.blog.auth.dto.request.RequestAuthDto;
+import com.mykim.blog.auth.manual.domain.AuthSession;
+import com.mykim.blog.auth.manual.dto.request.RequestAuthDto;
 import com.mykim.blog.member.domain.Member;
 import com.mykim.blog.member.repository.MemberRepository;
-import com.mykim.blog.auth.repository.AuthSessionRepository;
+import com.mykim.blog.auth.manual.repository.AuthSessionRepository;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -21,9 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.Cookie;
 
-import static com.mykim.blog.global.error.ErrorCode.INVALID_SIGN_IN_INFO;
-import static com.mykim.blog.global.error.ErrorCode.UNAUTHORIZED_MEMBER;
-import static com.mykim.blog.global.response.SuccessCode.SIGN_OUT;
+import static com.mykim.blog.global.result.error.ErrorCode.INVALID_SIGN_IN_INFO;
+import static com.mykim.blog.global.result.error.ErrorCode.UNAUTHORIZED_MEMBER;
+import static com.mykim.blog.global.result.SuccessCode.SIGN_OUT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 

@@ -1,16 +1,16 @@
 package com.mykim.blog.member.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mykim.blog.global.error.ErrorCode;
-import com.mykim.blog.global.response.SuccessCode;
+import com.mykim.blog.global.result.error.ErrorCode;
+import com.mykim.blog.global.result.SuccessCode;
 import com.mykim.blog.member.domain.Member;
+import com.mykim.blog.member.domain.MemberRole;
 import com.mykim.blog.member.dto.request.RequestMemberInsertDto;
 import com.mykim.blog.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -48,6 +48,7 @@ class MemberApiControllerTest {
                                                                         .email(email)
                                                                         .password(password)
                                                                         .username(username)
+                                                                        .memberRole(MemberRole.ROLE_MEMBER)
                                                                         .build();
 
         String api = "/api/v1/members/sign-up";
@@ -89,6 +90,7 @@ class MemberApiControllerTest {
                                                                             .email(email)
                                                                             .username(username)
                                                                             .password(password)
+                                                                            .memberRole(MemberRole.ROLE_MEMBER)
                                                                             .build();
         Member member = Member.createMember(memberInsertDto);
         memberRepository.save(member);
@@ -123,6 +125,7 @@ class MemberApiControllerTest {
                                                                             .email(email)
                                                                             .username(username)
                                                                             .password(password)
+                                                                            .memberRole(MemberRole.ROLE_MEMBER)
                                                                             .build();
 
         String api = "/api/v1/members/sign-up";

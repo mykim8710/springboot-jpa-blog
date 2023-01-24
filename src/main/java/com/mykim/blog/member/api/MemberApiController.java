@@ -1,7 +1,7 @@
 package com.mykim.blog.member.api;
 
-import com.mykim.blog.global.response.CommonResult;
-import com.mykim.blog.global.response.SuccessCode;
+import com.mykim.blog.global.result.CommonResult;
+import com.mykim.blog.global.result.SuccessCode;
 import com.mykim.blog.member.dto.request.RequestMemberInsertDto;
 import com.mykim.blog.member.service.MemberService;
 import lombok.RequiredArgsConstructor;

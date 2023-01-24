@@ -1,6 +1,6 @@
 package com.mykim.blog.post.service;
 
-import com.mykim.blog.global.error.exception.NotFoundException;
+import com.mykim.blog.global.result.error.exception.NotFoundException;
 import com.mykim.blog.global.pagination.CustomPaginationRequest;
 import com.mykim.blog.global.pagination.CustomSortingRequest;
 import com.mykim.blog.post.domain.Post;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.mykim.blog.global.error.ErrorCode.NOT_FOUND_POST;
+import static com.mykim.blog.global.result.error.ErrorCode.NOT_FOUND_POST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

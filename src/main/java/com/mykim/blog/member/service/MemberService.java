@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.mykim.blog.global.error.ErrorCode.*;
+import static com.mykim.blog.global.result.error.ErrorCode.*;
 
 @Slf4j
 @RequiredArgsConstructor

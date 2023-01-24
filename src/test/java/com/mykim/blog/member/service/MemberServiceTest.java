@@ -1,6 +1,6 @@
 package com.mykim.blog.member.service;
 
-import com.mykim.blog.global.error.ErrorCode;
+import com.mykim.blog.global.result.error.ErrorCode;
 import com.mykim.blog.member.domain.Member;
 import com.mykim.blog.member.dto.request.RequestMemberInsertDto;
 import com.mykim.blog.member.exception.DuplicateMemberEmailException;

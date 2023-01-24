@@ -1,9 +1,9 @@
 package com.mykim.blog.global.config.web;
 
-import com.mykim.blog.auth.argumentresolver.JwtAuthArgumentResolver;
-import com.mykim.blog.auth.argumentresolver.SessionAuthArgumentResolver;
-import com.mykim.blog.auth.config.JwtConfig;
-import com.mykim.blog.auth.repository.AuthSessionRepository;
+import com.mykim.blog.auth.manual.argumentresolver.JwtAuthArgumentResolver;
+import com.mykim.blog.auth.manual.argumentresolver.SessionAuthArgumentResolver;
+import com.mykim.blog.auth.manual.config.JwtConfig;
+import com.mykim.blog.auth.manual.repository.AuthSessionRepository;
 import com.mykim.blog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

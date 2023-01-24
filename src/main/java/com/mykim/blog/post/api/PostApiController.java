@@ -2,8 +2,8 @@ package com.mykim.blog.post.api;
 
 import com.mykim.blog.global.pagination.CustomPaginationRequest;
 import com.mykim.blog.global.pagination.CustomSortingRequest;
-import com.mykim.blog.global.response.CommonResult;
-import com.mykim.blog.global.response.SuccessCode;
+import com.mykim.blog.global.result.CommonResult;
+import com.mykim.blog.global.result.SuccessCode;
 import com.mykim.blog.post.dto.request.RequestPostCreateDto;
 import com.mykim.blog.post.dto.request.RequestPostUpdateDto;
 import com.mykim.blog.post.service.PostService;

@@ -1,7 +1,8 @@
 package com.mykim.blog.auth.service;
 
-import com.mykim.blog.auth.domain.AuthSession;
-import com.mykim.blog.auth.repository.AuthSessionRepository;
+import com.mykim.blog.auth.manual.domain.AuthSession;
+import com.mykim.blog.auth.manual.repository.AuthSessionRepository;
+import com.mykim.blog.auth.manual.service.SessionAuthService;
 import com.mykim.blog.member.domain.Member;
 import com.mykim.blog.member.repository.MemberRepository;
 import org.assertj.core.api.Assertions;
