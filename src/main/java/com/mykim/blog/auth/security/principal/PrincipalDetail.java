@@ -1,38 +1,37 @@
 package com.mykim.blog.auth.security.principal;
 
+import com.mykim.blog.member.domain.Member;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import spring.security.jwt.domain.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 @Getter
 public class PrincipalDetail implements UserDetails {
-    private User user;
+    private Member member;
 
-    public PrincipalDetail(User user) {
-        this.user = user;
+    public PrincipalDetail(Member member) {
+        this.member = member;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        user.getRoleList().forEach(role -> {
-            authorities.add(() -> role);
-        });
+        authorities.add(new SimpleGrantedAuthority(member.getMemberRole().name()));
         return authorities;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return member.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return member.getUsername();
     }
 
     @Override

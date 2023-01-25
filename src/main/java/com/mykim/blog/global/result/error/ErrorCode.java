@@ -13,10 +13,20 @@ public enum ErrorCode {
 
     DUPLICATE_USER_EMAIL(400, "M001", "This email is exist."),
 
-    UNAUTHORIZED_MEMBER(401, "M002", "You need authorization."),
 
     INVALID_SIGN_IN_INFO(400, "M003", "email or password is not matched."),
-    NOT_FOUND_MEMBER(404, "M004", "not found this member"),
+
+
+    // security - auth(Authorization, Authentication)
+
+    NOT_FOUND_MEMBER(404, "A001", "not found this member"),
+    PASSWORD_NOT_MATCH(400, "A002", "password is not matched."),
+    UNAUTHORIZED_MEMBER(401, "A003", "You need authorization."),
+    ACCESS_DENIED(403, "A004", "Access denied."),
+
+
+
+
     ;
 
 

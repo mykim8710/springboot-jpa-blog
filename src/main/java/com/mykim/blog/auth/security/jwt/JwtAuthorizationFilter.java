@@ -1,7 +1,10 @@
 package com.mykim.blog.auth.security.jwt;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+import com.mykim.blog.auth.security.principal.PrincipalDetail;
+import com.mykim.blog.member.domain.Member;
+import com.mykim.blog.member.repository.MemberRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,9 +14,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
-import spring.security.jwt.config.security.principal.PrincipalDetail;
-import spring.security.jwt.domain.User;
-import spring.security.jwt.repository.UserRepository;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -24,14 +24,14 @@ import java.util.List;
 
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-    private static final List<String> EXCLUDED_URL = List.of("/test");// jwt 토큰 검증이 필요없는 url 추가
+    private static final List<String> EXCLUDED_URL = List.of("");// jwt 토큰 검증이 필요없는 url 추가
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtProvider jwtProvider) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRepository memberRepository, JwtProvider jwtProvider) {
         super(authenticationManager);
-        this.userRepository = userRepository;
+        this.memberRepository = memberRepository;
         this.jwtProvider  = jwtProvider;
     }
 
@@ -49,13 +49,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         log.info("jwt Token = {}", jwt);
 
         if(StringUtils.hasText(jwt) && jwtProvider.isValidTokenExpireDate(jwt)) {
-            Integer userId = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET_KEY))
-                                    .build()
-                                    .verify(jwt)
-                                    .getClaim("id").asInt();
+            Jws<Claims> claims = jwtProvider.getClaims(jwt);
+            Long userId = Long.valueOf(claims.getBody().getSubject());
             log.info("userId = {}", userId);
-            User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new UsernameNotFoundException("없는 사용자입니다."));
-            PrincipalDetail principalDetail = new PrincipalDetail(user);
+
+            Member member = memberRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new UsernameNotFoundException("없는 사용자입니다."));
+            PrincipalDetail principalDetail = new PrincipalDetail(member);
 
             // jwt 토큰 서명을 통해서 서명이 정상이면 Authentication객체를 생성
             Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetail, null, principalDetail.getAuthorities());

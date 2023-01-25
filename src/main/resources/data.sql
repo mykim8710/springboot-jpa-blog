@@ -1,5 +1,5 @@
-insert into `member`(email, username, password, created_date, last_Modified_date, member_role) values ('mykim@google.com', 'mykim', '1111', now(), now(), 'ROLE_MEMBER');
-insert into `member`(email, username, password, created_date, last_Modified_date, member_role) values ('test@test.com', 'test', '1111', now(), now(), 'ROLE_MEMBER');
+insert into `member`(email, username, password, created_date, last_Modified_date, member_role) values ('mykim@google.com', 'mykim', '$2a$10$sqPmJxoV2Md0KLTS1WA6gugWHbAw1lWYmw5ASt61A1HVCUAog5hbi', now(), now(), 'ROLE_MEMBER');
+insert into `member`(email, username, password, created_date, last_Modified_date, member_role) values ('test@test.com', 'test', '$2a$10$sqPmJxoV2Md0KLTS1WA6gugWHbAw1lWYmw5ASt61A1HVCUAog5hbi', now(), now(), 'ROLE_MEMBER');
 
 insert into `post`(title, content, created_date, last_Modified_date) values ('title_1', 'content_1', now(), now());
 insert into `post`(title, content, created_date, last_Modified_date) values ('title_2', 'content_2', now(), now());

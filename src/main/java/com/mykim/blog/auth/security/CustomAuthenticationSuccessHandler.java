@@ -1,5 +1,10 @@
 package com.mykim.blog.auth.security;
 
+import com.mykim.blog.auth.security.jwt.JwtProperties;
+import com.mykim.blog.auth.security.jwt.JwtProvider;
+import com.mykim.blog.auth.security.principal.PrincipalDetail;
+import com.mykim.blog.global.result.CommonResult;
+import com.mykim.blog.global.result.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,11 +14,6 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import spring.security.jwt.config.security.jwt.JwtProperties;
-import spring.security.jwt.config.security.jwt.JwtProvider;
-import spring.security.jwt.config.security.principal.PrincipalDetail;
-import spring.security.jwt.global.result.CommonResult;
-import spring.security.jwt.global.result.SuccessCode;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +38,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         log.info("sign-in success");
 
         PrincipalDetail principalDetail = (PrincipalDetail) authentication.getPrincipal();
-        String jwt = jwtProvider.createJwt(principalDetail.getUser().getId());
+        String jwt = jwtProvider.createJwt(principalDetail.getMember().getId());
         log.info("jwt : {}", jwt);
 
         // set jwt token in header

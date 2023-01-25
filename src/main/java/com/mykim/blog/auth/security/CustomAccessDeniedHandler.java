@@ -1,5 +1,7 @@
 package com.mykim.blog.auth.security;
 
+import com.mykim.blog.global.result.CommonResult;
+import com.mykim.blog.global.result.error.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -8,8 +10,6 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
-import spring.security.jwt.global.result.CommonResult;
-import spring.security.jwt.global.result.error.ErrorCode;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +30,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         if(request.getRequestURI().contains("api")) {
             MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
             MediaType jsonMimeType = MediaType.APPLICATION_JSON;
-            CommonResult result = CommonResult.createBusinessExceptionResult(ErrorCode.ACCESS_DENIED);
+            CommonResult result = new CommonResult(ErrorCode.ACCESS_DENIED);
             if(jsonConverter.canWrite(result.getClass(), jsonMimeType)) {
                 jsonConverter.write(result, jsonMimeType, new ServletServerHttpResponse(response));
             }

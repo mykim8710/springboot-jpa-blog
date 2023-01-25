@@ -1,5 +1,6 @@
 package com.mykim.blog.auth.security;
 
+import com.mykim.blog.auth.security.principal.PrincipalDetailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -10,7 +11,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import spring.security.jwt.config.security.principal.PrincipalDetailService;
 
 @Slf4j
 @Component
@@ -26,11 +26,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         // 전달 받은 UsernamePasswordAuthenticationToken
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) authentication;
 
-        String username = authenticationToken.getName();
+        String email = authenticationToken.getName();
         String password = (String)authenticationToken.getCredentials();
 
+        System.out.println("email = " + email);
+        System.out.println("password = " + password);
+
         // 해당 회원 Database 조회
-        UserDetails userDetails = principalDetailService.loadUserByUsername(username);
+        UserDetails userDetails = principalDetailService.loadUserByUsername(email);
 
         // password 확인
         if(!passwordEncoder.matches(password, userDetails.getPassword())) {

@@ -1,25 +1,24 @@
 package com.mykim.blog.auth.security.principal;
 
+import com.mykim.blog.member.domain.Member;
+import com.mykim.blog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import spring.security.jwt.domain.User;
-import spring.security.jwt.repository.UserRepository;
 
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class PrincipalDetailService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("PrincipalDetailService 동작");
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("없는 사용자입니다."));
-        return new PrincipalDetail(user);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("없는 사용자입니다."));
+        return new PrincipalDetail(member);
     }
 }

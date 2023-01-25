@@ -1,5 +1,9 @@
 package com.mykim.blog.auth.security;
 
+import com.mykim.blog.auth.security.jwt.JwtAuthenticationFilter;
+import com.mykim.blog.auth.security.jwt.JwtAuthorizationFilter;
+import com.mykim.blog.auth.security.jwt.JwtProvider;
+import com.mykim.blog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +31,7 @@ public class SecurityConfig {
 
     private final CorsConfig corsConfig;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
 
 
@@ -124,7 +128,7 @@ public class SecurityConfig {
      */
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
-        return new JwtAuthorizationFilter(authenticationManager(), userRepository, jwtProvider);
+        return new JwtAuthorizationFilter(authenticationManager(), memberRepository, jwtProvider);
     }
 }
 
