@@ -2,7 +2,10 @@ package com.mykim.blog.member.domain;
 
 import com.mykim.blog.global.entity.BaseTimeEntity;
 import com.mykim.blog.member.dto.request.RequestMemberInsertDto;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -18,7 +21,6 @@ public class Member extends BaseTimeEntity {
     private String username;
 
     @Enumerated(EnumType.STRING)
-    //@Column(name = "MEMBER_ROLE")
     private MemberRole memberRole;
 
     @Builder

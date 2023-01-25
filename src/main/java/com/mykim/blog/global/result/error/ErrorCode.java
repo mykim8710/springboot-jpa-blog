@@ -9,7 +9,7 @@ public enum ErrorCode {
 
     VALIDATION_ERROR(400, "V001", "validation error"),
 
-    NOT_FOUND_POST(404, "P001", "not found this post"),
+
 
     DUPLICATE_USER_EMAIL(400, "M001", "This email is exist."),
 
@@ -24,6 +24,11 @@ public enum ErrorCode {
     UNAUTHORIZED_MEMBER(401, "A003", "You need authorization."),
     ACCESS_DENIED(403, "A004", "Access denied."),
 
+
+
+    // post
+    NOT_FOUND_POST(404, "P001", "not found this post"),
+    NOT_PERMIT_ACCESS_POST(400, "P002", "not permit access this post"),
 
 
 

@@ -49,8 +49,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         log.info("jwt Token = {}", jwt);
 
         if(StringUtils.hasText(jwt) && jwtProvider.isValidTokenExpireDate(jwt)) {
-            Jws<Claims> claims = jwtProvider.getClaims(jwt);
-            Long userId = Long.valueOf(claims.getBody().getSubject());
+            Long userId = Long.valueOf(jwtProvider.getSubject(jwt));
             log.info("userId = {}", userId);
 
             Member member = memberRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new UsernameNotFoundException("없는 사용자입니다."));

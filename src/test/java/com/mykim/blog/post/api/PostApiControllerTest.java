@@ -398,4 +398,5 @@ class PostApiControllerTest {
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
     }
+
 }

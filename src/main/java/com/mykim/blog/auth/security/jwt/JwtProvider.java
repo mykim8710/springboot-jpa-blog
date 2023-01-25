@@ -64,6 +64,12 @@ public class JwtProvider {
                     .build().parseClaimsJws(jwt);
     }
 
+    //Claims - getSubject(userId)
+    public String getSubject(final String jwt){
+        Jws<Claims> claims = getClaims(jwt);
+        return claims.getBody().getSubject();
+    }
+
     // get Jwt token from Header
     public String resolveJwt(final HttpServletRequest request){
         String jwtHeader = request.getHeader(JwtProperties.HEADER_STRING);

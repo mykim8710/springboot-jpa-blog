@@ -1,6 +1,7 @@
 package com.mykim.blog.post.domain;
 
 import com.mykim.blog.global.entity.BaseTimeEntity;
+import com.mykim.blog.member.domain.Member;
 import com.mykim.blog.post.dto.request.RequestPostCreateDto;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,13 +24,16 @@ public class Post extends BaseTimeEntity {
     @Lob
     private String content;
 
-//    @Enumerated(EnumType.STRING)
-//    private PostCategory category;
+    //(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
 
     @Builder
-    private Post(String title, String content) {
+    private Post(String title, String content, Member member) {
         this.title = title;
         this.content = content;
+        this.member = member;
     }
 
     public static Post createPost(RequestPostCreateDto postCreateDto) {
@@ -43,5 +47,18 @@ public class Post extends BaseTimeEntity {
         this.title = postEditor.getTitle();
         this.content = postEditor.getContent();
     }
+
+
+    public static Post createPost(RequestPostCreateDto postCreateDto, Member member) {
+        return Post.builder()
+                        .title(postCreateDto.getTitle())
+                        .content(postCreateDto.getContent())
+                        .member(member)
+                        .build();
+    }
+
+
+
+
 }
 

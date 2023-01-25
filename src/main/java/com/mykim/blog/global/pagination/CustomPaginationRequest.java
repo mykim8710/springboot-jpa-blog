@@ -10,6 +10,8 @@ public class CustomPaginationRequest {
     private int page;
     private int size;
 
+    private int pageCount = 5;
+
     public void setPage(int page) {
         this.page = Math.max(1, page);
     }

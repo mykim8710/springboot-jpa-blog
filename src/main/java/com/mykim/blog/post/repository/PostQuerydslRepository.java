@@ -23,6 +23,27 @@ import static com.mykim.blog.post.domain.QPost.post;
 public class PostQuerydslRepository {
     private final JPAQueryFactory queryFactory;
 
+    public Page<ResponsePostSelectDto> findPostSearchPaginationV2(Pageable pageable, String keyword, Long memberId) {
+        List<ResponsePostSelectDto> responsePostSelectDtos = queryFactory.select(new QResponsePostSelectDto(post.id, post.title, post.content))
+                                        .from(post)
+                                        .where(post.member.id.eq(memberId), createUniversalSearchCondition(keyword))
+                                        .offset(pageable.getOffset())
+                                        .limit(pageable.getPageSize())
+                                        .orderBy(getOrderSpecifier(pageable.getSort())
+                                                .stream()
+                                                .toArray(OrderSpecifier[]::new)
+                                        )
+                                        .fetch();
+
+        Long count = queryFactory.select(post.count())
+                                    .from(post)
+                                    .where(post.member.id.eq(memberId), createUniversalSearchCondition(keyword))
+                                    .fetchOne();
+
+        return new PageImpl<>(responsePostSelectDtos, pageable, count);
+    }
+
+
     public Page<ResponsePostSelectDto> findPostSearchPagination(Pageable pageable, String keyword) {
         List<ResponsePostSelectDto> responsePostSelectDtos = queryFactory.select(new QResponsePostSelectDto(post.id, post.title, post.content))
                                                     .from(post)
