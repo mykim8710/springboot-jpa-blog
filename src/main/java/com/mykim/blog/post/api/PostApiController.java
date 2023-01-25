@@ -173,7 +173,7 @@ public class PostApiController {
     }
 
     /**
-     * DELETE  /api/v1/posts/{postId}  => 글 수정
+     * DELETE  /api/v2/posts/{postId}  => 글 삭제
      */
     @DeleteMapping("/api/v2/posts/{postId}")
     public ResponseEntity<CommonResult> removePostByIdV2Api(@PathVariable Long postId, @AuthenticationPrincipal PrincipalDetail principalDetail) {

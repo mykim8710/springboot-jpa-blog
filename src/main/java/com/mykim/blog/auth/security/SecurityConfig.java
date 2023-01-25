@@ -82,7 +82,12 @@ public class SecurityConfig {
 
 
 
-                .antMatchers("/home").authenticated() // after login
+
+                .antMatchers("/", "/sign-up").anonymous()
+                
+
+
+
                 .anyRequest().permitAll();
 
         return httpSecurity.build();
