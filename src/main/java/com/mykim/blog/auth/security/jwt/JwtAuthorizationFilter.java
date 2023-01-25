@@ -24,7 +24,7 @@ import java.util.List;
 
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-    private static final List<String> EXCLUDED_URL = List.of("");// jwt 토큰 검증이 필요없는 url 추가
+    private static final List<String> EXCLUDED_URL = List.of("/api/auth/exclude");// jwt 토큰 검증이 필요없는 url 추가
 
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;

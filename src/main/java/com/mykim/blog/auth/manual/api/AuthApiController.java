@@ -6,10 +6,13 @@ import com.mykim.blog.auth.manual.dto.request.RequestAuthDto;
 import com.mykim.blog.auth.manual.dto.response.ResponseAuthDto;
 import com.mykim.blog.auth.manual.service.JwtAuthService;
 import com.mykim.blog.auth.manual.service.SessionAuthService;
+import com.mykim.blog.auth.security.principal.PrincipalDetail;
 import com.mykim.blog.global.result.CommonResult;
+import com.mykim.blog.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +22,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.Arrays;
 
 import static com.mykim.blog.global.result.SuccessCode.SIGN_IN;
@@ -30,7 +34,6 @@ import static com.mykim.blog.global.result.SuccessCode.SIGN_OUT;
 public class AuthApiController {
     private final SessionAuthService sessionAuthService;
     private final JwtAuthService jwtAuthService;
-
 
     @GetMapping("/api/v1/auth/foo")
     public String fooAuthorizationTestApi(@CustomSessionAuthorization ResponseAuthDto authDto) {
@@ -50,6 +53,32 @@ public class AuthApiController {
     public String barAuthorizationTestApi() {
         log.info("[GET] /api/v1/auth/bar");
         return "인증이 필요없는 api";
+    }
+
+    @GetMapping("/api/auth/member")
+    public String jwtAuthMemberApi(Authentication authentication) {
+        log.info("[GET] /api/auth/member");
+        PrincipalDetail principalDetail = (PrincipalDetail)authentication.getPrincipal();
+        Member member = principalDetail.getMember();
+        System.out.println("member.getUsername() = " + member.getUsername());
+        System.out.println("member.getEmail() = " + member.getEmail());
+        System.out.println("member.getMemberRole() = " + member.getMemberRole());
+        return "user";
+    }
+    @GetMapping("/api/auth/admin")
+    public String jwtAuthAminApi(Authentication authentication) {
+        log.info("[GET] /api/auth/admin");
+        PrincipalDetail principalDetail = (PrincipalDetail)authentication.getPrincipal();
+        Member member = principalDetail.getMember();
+        System.out.println("member.getUsername() = " + member.getUsername());
+        System.out.println("member.getEmail() = " + member.getEmail());
+        System.out.println("member.getMemberRole() = " + member.getMemberRole());
+        return "admin";
+    }
+    @GetMapping("/api/auth/exclude")
+    public String jwtAuthorizationExcludeApi() {
+        log.info("[GET] /api/auth/exclude");
+        return "exclude";
     }
 
 
