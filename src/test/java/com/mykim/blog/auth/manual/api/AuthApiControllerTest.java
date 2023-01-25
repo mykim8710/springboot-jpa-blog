@@ -1,4 +1,4 @@
-package com.mykim.blog.auth.api;
+package com.mykim.blog.auth.manual.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mykim.blog.auth.manual.domain.AuthSession;

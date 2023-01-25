@@ -84,7 +84,7 @@ public class SecurityConfig {
 
 
                 .antMatchers("/", "/sign-up").anonymous()
-                
+
 
 
 

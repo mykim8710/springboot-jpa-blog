@@ -1,9 +1,6 @@
 package com.mykim.blog.member.dto.request;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -11,4 +8,10 @@ import lombok.ToString;
 public class RequestMemberSignInDto {
     private String email;
     private String password;
+
+    @Builder
+    public RequestMemberSignInDto(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

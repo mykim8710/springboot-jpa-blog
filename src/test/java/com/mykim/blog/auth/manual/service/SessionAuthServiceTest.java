@@ -1,4 +1,4 @@
-package com.mykim.blog.auth.service;
+package com.mykim.blog.auth.manual.service;
 
 import com.mykim.blog.auth.manual.domain.AuthSession;
 import com.mykim.blog.auth.manual.repository.AuthSessionRepository;

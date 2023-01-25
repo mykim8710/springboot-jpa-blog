@@ -22,3 +22,6 @@
 1674639951604|0|statement|connection 17|url jdbc:h2:mem:3c79ad48-b4a1-4a37-8046-d2f86b68511c|drop table if exists auth_session CASCADE |drop table if exists auth_session CASCADE 
 1674639951604|0|statement|connection 17|url jdbc:h2:mem:3c79ad48-b4a1-4a37-8046-d2f86b68511c|drop table if exists member CASCADE |drop table if exists member CASCADE 
 1674639951604|0|statement|connection 17|url jdbc:h2:mem:3c79ad48-b4a1-4a37-8046-d2f86b68511c|drop table if exists post CASCADE |drop table if exists post CASCADE 
+1674656646180|0|statement|connection 52|url jdbc:h2:mem:31ccc79e-4b86-4175-9cbe-e608931a9a90|drop table if exists auth_session CASCADE |drop table if exists auth_session CASCADE 
+1674656646181|0|statement|connection 52|url jdbc:h2:mem:31ccc79e-4b86-4175-9cbe-e608931a9a90|drop table if exists member CASCADE |drop table if exists member CASCADE 
+1674656646181|0|statement|connection 52|url jdbc:h2:mem:31ccc79e-4b86-4175-9cbe-e608931a9a90|drop table if exists post CASCADE |drop table if exists post CASCADE 
