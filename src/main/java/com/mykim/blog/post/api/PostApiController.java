@@ -5,6 +5,7 @@ import com.mykim.blog.global.pagination.CustomPaginationRequest;
 import com.mykim.blog.global.pagination.CustomSortingRequest;
 import com.mykim.blog.global.result.CommonResult;
 import com.mykim.blog.global.result.SuccessCode;
+import com.mykim.blog.member.domain.Member;
 import com.mykim.blog.post.dto.request.RequestPostCreateDto;
 import com.mykim.blog.post.dto.request.RequestPostUpdateDto;
 import com.mykim.blog.post.service.PostService;
@@ -48,22 +49,22 @@ public class PostApiController {
     }
 
     /**
-     * GET /api/v1/posts => 글 목록조회(전체)
+     * GET /api/v1/posts/all => 글 목록조회(전체), not used
      */
-    @GetMapping("/api/v1/posts")
+    @GetMapping("/api/v1/posts/all")
     public ResponseEntity<CommonResult> selectPostAllApi() {
-        log.info("[GET] /api/v1/posts  =>  글 목록조회(전체)");
+        log.info("[GET] /api/v1/posts/all  =>  글 목록조회(전체)");
         return ResponseEntity
                 .ok()
                 .body(new CommonResult(SuccessCode.COMMON, postService.selectPostAll()));
     }
 
     /**
-     * GET /api/v2/posts => 글 목록조회(페이징 + 정렬)
+     * GET /api/v1/posts/all-pagination => 글 목록조회(페이징 + 정렬), not used
      */
-    @GetMapping("/api/v2/posts")
+    @GetMapping("/api/v1/posts/all-pagination")
     public ResponseEntity<CommonResult> selectPostAllPaginationApi(@PageableDefault Pageable pageable) {
-        log.info("[GET] /api/v2/posts  =>  글 목록조회(페이징 + 정렬)");
+        log.info("[GET] /api/v1/posts/all-pagination  =>  글 목록조회(페이징 + 정렬)");
         log.info("pageable = {}", pageable);
 
         return ResponseEntity
@@ -72,13 +73,13 @@ public class PostApiController {
     }
 
     /**
-     * GET /api/v3/posts => 글 목록조회(페이징 + 정렬 + 검색), Querydsl
+     * GET /api/v1/posts => 글 목록조회(페이징 + 정렬 + 검색), Querydsl
      */
-    @GetMapping("/api/v3/posts")
+    @GetMapping("/api/v1/posts")
     public ResponseEntity<CommonResult> selectPostAllPaginationQuerydslApi(@ModelAttribute CustomPaginationRequest paginationRequest,
                                                                            @ModelAttribute CustomSortingRequest sortingRequest,
                                                                            @RequestParam String keyword) {
-        log.info("[GET] /api/v3/posts  =>  글 목록조회(페이징 + 정렬 + 검색, Querydsl)");
+        log.info("[GET] /api/v1/posts  =>  글 목록조회(페이징 + 정렬 + 검색, Querydsl)");
         log.info("CustomPaginationRequest = {}", paginationRequest);
         log.info("CustomSortingRequest = {}", sortingRequest);
         log.info("keyword = {}", keyword);
@@ -123,6 +124,12 @@ public class PostApiController {
     @PostMapping("/api/v2/posts")
     public ResponseEntity<CommonResult> createPostV2Api(@RequestBody @Valid RequestPostCreateDto postCreateDto, @AuthenticationPrincipal PrincipalDetail principalDetail) {
         log.info("[POST] /api/v2/posts  =>  글 등록");
+
+        Member member = principalDetail.getMember();
+        System.out.println("member.getUsername() = " + member.getUsername());
+        System.out.println("member.getEmail() = " + member.getEmail());
+        System.out.println("member.getMemberRole() = " + member.getMemberRole());
+
         postService.createPostV2(postCreateDto, principalDetail.getMember());
         return ResponseEntity
                 .ok()
@@ -141,14 +148,14 @@ public class PostApiController {
     }
 
     /**
-     * GET /api/v4/posts => 글 목록조회(페이징 + 정렬 + 검색), Querydsl
+     * GET /api/v2/posts => 글 목록조회(페이징 + 정렬 + 검색), Querydsl
      */
-    @GetMapping("/api/v4/posts")
+    @GetMapping("/api/v2/posts")
     public ResponseEntity<CommonResult> selectPostAllPaginationQuerydslV4Api(@ModelAttribute CustomPaginationRequest paginationRequest,
                                                                              @ModelAttribute CustomSortingRequest sortingRequest,
                                                                              @RequestParam String keyword,
                                                                              @AuthenticationPrincipal PrincipalDetail principalDetail) {
-        log.info("[GET] /api/v4/posts  =>  글 목록조회(페이징 + 정렬 + 검색, Querydsl)");
+        log.info("[GET] /api/v2/posts  =>  글 목록조회(페이징 + 정렬 + 검색, Querydsl)");
         log.info("CustomPaginationRequest = {}", paginationRequest);
         log.info("CustomSortingRequest = {}", sortingRequest);
         log.info("keyword = {}", keyword);

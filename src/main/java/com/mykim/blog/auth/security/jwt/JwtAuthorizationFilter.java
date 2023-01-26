@@ -1,11 +1,14 @@
 package com.mykim.blog.auth.security.jwt;
 
 import com.mykim.blog.auth.security.principal.PrincipalDetail;
+import com.mykim.blog.global.result.error.ErrorCode;
 import com.mykim.blog.member.domain.Member;
+import com.mykim.blog.member.exception.UnAuthorizedMemberException;
 import com.mykim.blog.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.FilterChain;
@@ -24,15 +28,21 @@ import java.util.List;
 
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-    private static final List<String> EXCLUDED_URL = List.of("/api/auth/exclude");// jwt 토큰 검증이 필요없는 url 추가
+    private static final List<String> EXCLUDED_URL = List.of("/sign-out");// jwt 토큰 검증이 필요없는 url 추가
 
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
+    private final RedisTemplate redisTemplate;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRepository memberRepository, JwtProvider jwtProvider) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
+                                  MemberRepository memberRepository,
+                                  JwtProvider jwtProvider,
+                                  RedisTemplate redisTemplate) {
+
         super(authenticationManager);
         this.memberRepository = memberRepository;
         this.jwtProvider  = jwtProvider;
+        this.redisTemplate = redisTemplate;
     }
 
     /**
@@ -48,18 +58,26 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String jwt = jwtProvider.resolveJwt(request);
         log.info("jwt Token = {}", jwt);
 
+
         if(StringUtils.hasText(jwt) && jwtProvider.isValidTokenExpireDate(jwt)) {
-            Long userId = Long.valueOf(jwtProvider.getSubject(jwt));
-            log.info("userId = {}", userId);
+            // redis로부터 이 토큰이 로그아웃된 토큰인지 확인
+            String isSignOut = (String)redisTemplate.opsForValue().get(jwt);
+            log.info("isSignOut : {}" , isSignOut);
+            System.out.println("ObjectUtils.isEmpty(isSignOut) = " + ObjectUtils.isEmpty(isSignOut));
 
-            Member member = memberRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new UsernameNotFoundException("없는 사용자입니다."));
-            PrincipalDetail principalDetail = new PrincipalDetail(member);
+            if(ObjectUtils.isEmpty(isSignOut) == true) {
+                Long userId = Long.valueOf(jwtProvider.getSubject(jwt));
+                log.info("userId = {}", userId);
 
-            // jwt 토큰 서명을 통해서 서명이 정상이면 Authentication객체를 생성
-            Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetail, null, principalDetail.getAuthorities());
+                Member member = memberRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new UsernameNotFoundException("없는 사용자입니다."));
+                PrincipalDetail principalDetail = new PrincipalDetail(member);
 
-            // 강제로 시큐리티의 세션에 접근하여 값 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                // jwt 토큰 서명을 통해서 서명이 정상이면 Authentication객체를 생성
+                Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetail, null, principalDetail.getAuthorities());
+
+                // 강제로 시큐리티의 세션에 접근하여 값 저장
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
 
         chain.doFilter(request, response);

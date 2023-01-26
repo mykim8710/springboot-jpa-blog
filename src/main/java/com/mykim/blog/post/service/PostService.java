@@ -45,7 +45,6 @@ public class PostService {
         return new ResponsePostSelectDto(findPost);
     }
 
-
     @Transactional(readOnly = true)
     public List<ResponsePostSelectDto> selectPostAll() {
         return postRepository.findAll()

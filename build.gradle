@@ -1,4 +1,4 @@
-//querydsl 추가
+// querydsl
 buildscript {
     ext {
         queryDslVersion = "5.0.0"
@@ -10,8 +10,11 @@ plugins {
     id 'org.springframework.boot' version '2.7.7'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 
-    //querydsl 추가
+    // querydsl
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+
+    // Spring Rest DOCS
+    id "org.asciidoctor.jvm.convert" version "3.3.2" // AsciiDoc 파일을 컨버팅하고 Build 폴더에 복사하기 위한 플러그인
 }
 
 group = 'com.mykim'
@@ -22,10 +25,22 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+
+    // querydsl
+    querydsl.extendsFrom compileClasspath
+
+    // Spring Rest DOCS
+    asciidoctorExt
 }
 
 repositories {
     mavenCentral()
+}
+
+// Spring Rest DOCS
+ext {
+    snippetsDir = file('build/generated-snippets')
+    asciidocVersion = "2.0.7.RELEASE" // dependencies보다 앞에 선언되어야 됨
 }
 
 dependencies {
@@ -38,7 +53,7 @@ dependencies {
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
-    //querydsl 추가
+    //querydsl
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 
@@ -46,6 +61,15 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'it.ozimov:embedded-redis:0.7.2' // embedded redis(for testCode)
+
+
+    // Spring Rest DOCS
+    asciidoctorExt "org.springframework.restdocs:spring-restdocs-asciidoctor:${asciidocVersion}"
+    testImplementation "org.springframework.restdocs:spring-restdocs-mockmvc:${asciidocVersion}"
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
@@ -61,7 +85,7 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-//querydsl 추가 시작
+//querydsl
 def querydslDir = "$buildDir/generated/querydsl"
 
 querydsl {
@@ -73,13 +97,27 @@ sourceSets {
     main.java.srcDir querydslDir
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-    querydsl.extendsFrom compileClasspath
-}
-
 compileQuerydsl {
     options.annotationProcessorPath = configurations.querydsl
+}
+
+// Spring Rest DOCS
+test {
+    outputs.dir snippetsDir
+}
+
+// gradle build 시 test -> asciidoctor 순으로 수행
+asciidoctor {
+    inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
+    dependsOn test
+}
+
+// gradle build 시 asciidoctor -> bootJar 순으로 수행
+bootJar {
+    dependsOn asciidoctor
+    copy {
+        from asciidoctor.outputDir
+        into "src/main/resources/static/docs"
+    }
 }

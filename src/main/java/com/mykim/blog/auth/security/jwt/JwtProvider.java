@@ -46,6 +46,12 @@ public class JwtProvider {
         return new Date(calendar.getTimeInMillis());
     }
 
+    // jwt accessToken 남은 유효시간
+    public Long getJwtRemainValidTime(String jwt) {
+        Date expiration = getClaims(jwt.trim()).getBody().getExpiration();
+        Date now = new Date();
+        return expiration.getTime() - now.getTime();
+    }
 
     // 토큰 만료일자 확인
     public boolean isValidTokenExpireDate(final String jwt){

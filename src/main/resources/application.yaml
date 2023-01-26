@@ -19,20 +19,43 @@ spring:
 
   # JPA 관련
   jpa:
+    # OSIV 설정 : Open Session In View(하이버네이트),  Open EntityManager In View(JPA)
+    # default : true
+    # [true]
+    # - 트랜잭션 시작처럼 최초 데이터베이스 커넥션 시작 시점부터 API 응답이 끝날 때 까지 영속성 컨텍스트와 데이터베이스 커넥션을 유지
+    # - 그렇기때문에 View Template이나 API 컨트롤러에서 지연 로딩이 가능
+    # - 지연 로딩은 영속성 컨텍스트가 살아있어야 가능하고, 영속성 컨텍스트는 기본적으로 데이터베이스 커넥션을 유지한다. → 이것 자체가 큰 장점이다.
+    # - 이 전략은 너무 오랜시간동안 데이터베이스 커넥션 리소스를 사용하기 때문에, 실시간 트래픽이 중요한 애플리케이션에서는 커넥션이 모자랄 수 있다. → 이것은 결국 장애로 이어진다
+    # - 컨트롤러에서 외부 API를 호출하면 외부 API 대기 시간 만큼 커넥션 리소스를 반환하지 못하고, 유지해야 한다.
+    # [false]
+    # - 트랜잭션을 종료할 때 영속성 컨텍스트를 닫고, 데이터베이스 커넥션도 반환
+    # - 모든 지연로딩을 트랜잭션 안에서 처리
+    # - 지연로딩 코드를 트랜잭션 안으로 넣어야 하는 단점
+    # - 트랜잭션이 끝나기 전에 지연 로딩을 강제로 호출해 두어야 함
+    open-in-view: false
+
     hibernate:
-      ddl-auto: create # create : 애플리케이션 실행 시점에 테이블을 drop하고, 다시 생성
+      ddl-auto: create
+        # ddl-auto: 'option'
+          # none : 아무것도 하지 않는다.
+          # create : 기존의 테이블이 있다면, 지우고 새로 만듬.
+          # create-drop : 테이블을 새로 만들고, 앱이 꺼지기 전에 지운다.
+          # update : Entity에서 추가된 필드를 테이블에 반영한다.(테이블 수정)
+          # validate : Entity와 테이블의 정합성이 맞는지 검증한다.(안맞으면 오류를 발생 : Application 종료)
     properties:
       hibernate:
         # show_sql: true   # System.out에 하이버네이트 실행 SQL을 남김
         format_sql: true
         # default_batch_fetch_size: 500 #설정, in (, , , ,) 의 개수, 100 ~ 1000
         use_sql_comments: true # querydsl - jpql parameter
-    defer-datasource-initialization: true #app 실행 시 data.sql 실행
+    #defer-datasource-initialization: true #app 실행 시 data.sql 실행
+
+
 
   #app 실행 시 data.sql 실행
-  sql:
-    init:
-      mode: always
+  # sql:
+  #   init:
+  #     mode: always
 
 
   # thymeleaf(View Template)
@@ -41,11 +64,12 @@ spring:
   #  prefix: classpath:/templates/
   #  suffix: .html
 
+  # Redis 설정
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
 logging:
   level:
     org.hibernate.SQL: debug    # Logger를 통해 하이버네이트 실행 SQL을 남김
     # org.hibernate.type: trace # SQL 실행 파라미터를 로그로 남긴다.
-
-## jwt 설정
-custom-jwt:
-  key: "jiS48dIGRtD73A/st4gd8SxL7AHSdkPtNb7oO9p22rI="

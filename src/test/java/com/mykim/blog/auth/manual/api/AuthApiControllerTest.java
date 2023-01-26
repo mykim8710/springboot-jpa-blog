@@ -61,9 +61,9 @@ class AuthApiControllerTest {
         String api = "/api/v1/auth/sign-in";
 
         RequestAuthDto memberSignInDto = RequestAuthDto.builder()
-                                                                            .email(email)
-                                                                            .password(password)
-                                                                            .build();
+                                                        .email(email)
+                                                        .password(password)
+                                                        .build();
 
         String requestDtoJsonStr = objectMapper.writeValueAsString(memberSignInDto);
 

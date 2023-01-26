@@ -22,15 +22,11 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-
         // 전달 받은 UsernamePasswordAuthenticationToken
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) authentication;
 
         String email = authenticationToken.getName();
         String password = (String)authenticationToken.getCredentials();
-
-        System.out.println("email = " + email);
-        System.out.println("password = " + password);
 
         // 해당 회원 Database 조회
         UserDetails userDetails = principalDetailService.loadUserByUsername(email);

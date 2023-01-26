@@ -124,7 +124,7 @@ class PostServiceTest {
         // when
         List<ResponsePostSelectDto> responsePostSelectDtos = postService.selectPostAll();
 
-        // then\
+        // then
         assertThat(responsePostSelectDtos).isNotNull();
         assertThat(responsePostSelectDtos.size()).isEqualTo(3);
     }
@@ -160,10 +160,20 @@ class PostServiceTest {
     @DisplayName("[성공] PostService, selectPostAllPaginationQuerydsl() 실행하면 선택한 페이지의 글이 조회된다")
     void selectPostAllPaginationQuerydslSuccessTest() throws Exception {
         // given
+        Member member = Member.builder()
+                                    .email("abc@abc.com")
+                                    .username("abc")
+                                    .password("1111")
+                                    .memberRole(MemberRole.ROLE_MEMBER)
+                                    .build();
+
+        memberRepository.save(member);
+
         List<Post> createdPosts = IntStream.range(1, 31)
                                             .mapToObj(i -> Post.builder()
                                                     .title("title_" +i)
                                                     .content("content_" +i)
+                                                    .member(member)
                                                     .build()
                                             ).collect(Collectors.toList());
         postRepository.saveAll(createdPosts);

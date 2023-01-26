@@ -9,8 +9,7 @@ import java.util.Base64;
 @Getter
 @Component
 public class JwtConfig {
-    @Value("${custom-jwt.key}")
-    private String key;
+    private String key = "jiS48dIGRtD73A/st4gd8SxL7AHSdkPtNb7oO9p22rI=";
 
     public byte[] getDecodeKey() {
         return Base64.getDecoder().decode(this.key);

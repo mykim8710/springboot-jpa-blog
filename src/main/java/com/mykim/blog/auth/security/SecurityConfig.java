@@ -7,6 +7,7 @@ import com.mykim.blog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -33,6 +34,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
+    private final RedisTemplate redisTemplate;
 
 
     // 인증을 무시할 경로들을 설정 >> static resource 보안설정
@@ -80,8 +82,9 @@ public class SecurityConfig {
                 .antMatchers("/api/auth/admin/**").access("hasRole('ROLE_ADMIN')")
 
 
-
-
+                // post authorization
+                .antMatchers("/api/v1/posts/**").permitAll()
+                .antMatchers("/api/v2/posts/**").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
 
                 .antMatchers("/", "/sign-up").anonymous()
 
@@ -135,7 +138,7 @@ public class SecurityConfig {
      */
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
-        return new JwtAuthorizationFilter(authenticationManager(), memberRepository, jwtProvider);
+        return new JwtAuthorizationFilter(authenticationManager(), memberRepository, jwtProvider, redisTemplate);
     }
 }
 

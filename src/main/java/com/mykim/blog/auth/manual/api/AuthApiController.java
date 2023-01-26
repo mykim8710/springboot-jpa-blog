@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,14 +57,13 @@ public class AuthApiController {
     }
 
     @GetMapping("/api/auth/member")
-    public String jwtAuthMemberApi(Authentication authentication) {
+    public String jwtAuthMemberApi(@AuthenticationPrincipal PrincipalDetail principalDetail) {
         log.info("[GET] /api/auth/member");
-        PrincipalDetail principalDetail = (PrincipalDetail)authentication.getPrincipal();
         Member member = principalDetail.getMember();
         System.out.println("member.getUsername() = " + member.getUsername());
         System.out.println("member.getEmail() = " + member.getEmail());
         System.out.println("member.getMemberRole() = " + member.getMemberRole());
-        return "user";
+        return "member";
     }
     @GetMapping("/api/auth/admin")
     public String jwtAuthAminApi(Authentication authentication) {

@@ -9,13 +9,17 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mykim.blog.member.domain.QMember.member;
 import static com.mykim.blog.post.domain.QPost.post;
 
 @RequiredArgsConstructor
@@ -24,9 +28,10 @@ public class PostQuerydslRepository {
     private final JPAQueryFactory queryFactory;
 
     public Page<ResponsePostSelectDto> findPostSearchPaginationV2(Pageable pageable, String keyword, Long memberId) {
-        List<ResponsePostSelectDto> responsePostSelectDtos = queryFactory.select(new QResponsePostSelectDto(post.id, post.title, post.content))
+        List<ResponsePostSelectDto> responsePostSelectDtos = queryFactory.select(new QResponsePostSelectDto(post.id, post.title, post.content, post.createdDate, post.lastModifiedDate, member.username))
                                         .from(post)
-                                        .where(post.member.id.eq(memberId), createUniversalSearchCondition(keyword))
+                                        .join(post.member, member)
+                                        .where(member.id.eq(memberId), createUniversalSearchCondition(keyword))
                                         .offset(pageable.getOffset())
                                         .limit(pageable.getPageSize())
                                         .orderBy(getOrderSpecifier(pageable.getSort())
@@ -37,7 +42,8 @@ public class PostQuerydslRepository {
 
         Long count = queryFactory.select(post.count())
                                     .from(post)
-                                    .where(post.member.id.eq(memberId), createUniversalSearchCondition(keyword))
+                                    .join(post.member, member)
+                                    .where(member.id.eq(memberId), createUniversalSearchCondition(keyword))
                                     .fetchOne();
 
         return new PageImpl<>(responsePostSelectDtos, pageable, count);
@@ -45,8 +51,8 @@ public class PostQuerydslRepository {
 
 
     public Page<ResponsePostSelectDto> findPostSearchPagination(Pageable pageable, String keyword) {
-        List<ResponsePostSelectDto> responsePostSelectDtos = queryFactory.select(new QResponsePostSelectDto(post.id, post.title, post.content))
-                                                    .from(post)
+        List<ResponsePostSelectDto> responsePostSelectDtos = queryFactory.select(new QResponsePostSelectDto(post.id, post.title, post.content, post.createdDate, post.lastModifiedDate, member.username))
+                                                    .from(post).join(post.member, member)
                                                     .where(createUniversalSearchCondition(keyword))
                                                     .offset(pageable.getOffset())
                                                     .limit(pageable.getPageSize())
