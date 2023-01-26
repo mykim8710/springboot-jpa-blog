@@ -48,14 +48,14 @@ spring:
         format_sql: true
         # default_batch_fetch_size: 500 #설정, in (, , , ,) 의 개수, 100 ~ 1000
         use_sql_comments: true # querydsl - jpql parameter
-    #defer-datasource-initialization: true #app 실행 시 data.sql 실행
+    defer-datasource-initialization: true #app 실행 시 data.sql 실행
 
 
 
   #app 실행 시 data.sql 실행
-  # sql:
-  #   init:
-  #     mode: always
+  sql:
+    init:
+      mode: always
 
 
   # thymeleaf(View Template)
