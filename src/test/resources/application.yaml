@@ -2,16 +2,12 @@ spring:
   profiles:
     active: test
 
-  #app 실행 시 data.sql 실행 X
+  #test : data.sql 실행X
   sql:
     init:
       mode: never
 
-  # Redis 설정
+  # Redis
   redis:
     host: 127.0.0.1
     port: 6379
-
-## jwt 설정
-custom-jwt:
-  key: "jiS48dIGRtD73A/st4gd8SxL7AHSdkPtNb7oO9p22rI="

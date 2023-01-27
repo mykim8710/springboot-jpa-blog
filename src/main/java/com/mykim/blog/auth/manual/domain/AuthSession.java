@@ -28,7 +28,7 @@ public class AuthSession {
 
     // AuthSession <-> Member, 1 : 1
     // 연관관계의 주인 : MEMBER_ID(fk)를 가짐
-    @ManyToOne(fetch = FetchType.LAZY) // cascade = CascadeType.ALL
+    @ManyToOne(fetch = FetchType.EAGER) // cascade = CascadeType.ALL
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 

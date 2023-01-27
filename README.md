@@ -8,10 +8,12 @@
   - Type : Gradle(Groovy)
   - Packaging : Jar
   - TestCode : JUnit5
+
 [Project Metadata]
   - Group: com.mykim
   - Artifact: blog
   - Package name: com.mykim.blog
+
 [Dependencies]
   - Spring Web
   - Spring Data JPA
@@ -19,7 +21,7 @@
   - H2 Database
   - Thymeleaf
   - Querydsl
-  - jwt
+  - Jwt
   - Redis
   - Spring Rest Docs
 [package design]
@@ -74,6 +76,7 @@
     │   │            │    │    │── querydsl
     │   │            │    │    │     └── QuerydslConfig(C)
     │   │            │    │    │── redis
+    │   │            │    │    │     │── EmbeddedRedisConfig(C)
     │   │            │    │    │     └── RedisConfig(C)
     │   │            │    │    └── web
     │   │            │    │          └── WebMvcConfig(C)
@@ -172,6 +175,7 @@
     │   │            │         └── MemberServiceTest(C)
     │   │            ├── post
     │   │            │    ├── api
+    │   │                      ├── PostApiControllerDocTest(C)
     │   │            │    │    └── PostApiControllerTest(C)
     │   │            │    └── service
     │   │            │         └── PostServiceTest(C)

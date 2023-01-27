@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import redis.embedded.RedisServer;
 
@@ -24,7 +25,7 @@ public class EmbeddedRedisConfig {
 
     @PostConstruct
     public void redisServer() throws IOException {
-        int port = isRedisRunning()? findAvailablePort() : redisPort;
+        int port = isRedisRunning() ? findAvailablePort() : redisPort;
         redisServer = new RedisServer(port);
         redisServer.start();
     }
@@ -83,7 +84,7 @@ public class EmbeddedRedisConfig {
         } catch (Exception e) {
         }
 
-        return !StringUtils.isEmpty(pidInfo.toString());
+        return !ObjectUtils.isEmpty(pidInfo.toString());
     }
 
 }

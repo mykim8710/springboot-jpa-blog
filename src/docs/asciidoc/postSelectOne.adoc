@@ -1,19 +1,14 @@
-= Mykim's Blog Api Docs
+= Mykim's Blog API Document : 글(POST) 단건조회
 :toc:
 
-== POST_selectPostOneById
-
 == 요청
-
 include::{snippets}/post_selectOne/http-request.adoc[]
 
 == 요청 파라미터
 include::{snippets}/post_selectOne/path-parameters.adoc[]
 
 == 응답
-
 include::{snippets}/post_selectOne/http-response.adoc[]
 
-== Curl
-
-include::{snippets}/post_selectOne/curl-request.adoc[]
+== 응답 파라미터
+include::{snippets}/post_selectOne/response-fields.adoc[]

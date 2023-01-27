@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -21,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -46,20 +49,6 @@ class PostApiControllerDocTest {
     }*/
 
     @Test
-    @DisplayName("[성공] 인증필요없음  / GET 요청 시 index.html 페이지가 로드된다. : Spring Rest DOCS 작동 테스트")
-    void indexViewTest() throws Exception {
-        // given
-        String api = "/";
-
-        // when & then
-        mockMvc.perform(get(api)
-                        .contentType(APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(print())
-                .andDo(document("index"));// rest doc 문서화
-    }
-
-    @Test
     @DisplayName("[성공] 인증필요없음  /api/v1/posts/{postId} GET 요청 시 글 하나가 조회된다.")
     @Transactional
     void selectPostByIdApiSuccessTest() throws Exception {
@@ -80,9 +69,21 @@ class PostApiControllerDocTest {
                 )
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(document("post_selectOne",
+                        // path parameter
                         RequestDocumentation.pathParameters(
-                                RequestDocumentation.parameterWithName("postId").description("게시물 ID"))
-
+                        RequestDocumentation.parameterWithName("postId").description("게시물 id")),
+                        // response field
+                        PayloadDocumentation.responseFields(
+                            PayloadDocumentation.fieldWithPath("status").description("http status"),
+                            PayloadDocumentation.fieldWithPath("code").description(""),
+                            PayloadDocumentation.fieldWithPath("message").description("message"),
+                            PayloadDocumentation.fieldWithPath("data.id").description("게시물 ID"),
+                            PayloadDocumentation.fieldWithPath("data.title").description("게시물 Title"),
+                            PayloadDocumentation.fieldWithPath("data.content").description("게시물 Content"),
+                            PayloadDocumentation.fieldWithPath("data.createdDate").description("게시물 작성일"),
+                            PayloadDocumentation.fieldWithPath("data.lastModifiedDate").description("게시물 최종수정일"),
+                            PayloadDocumentation.fieldWithPath("data.username").description("게시물 작성자명")
+                        )
 
                         ));// rest doc 문서화;
     }

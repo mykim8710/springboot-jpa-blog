@@ -10,6 +10,7 @@ import com.mykim.blog.auth.manual.repository.AuthSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -59,12 +60,15 @@ public class SessionAuthArgumentResolver implements HandlerMethodArgumentResolve
         AuthSession authSession = authSessionRepository.findByAccessToken(authCookie.getValue())
                                             .orElseThrow(() -> new UnAuthorizedMemberException(ErrorCode.UNAUTHORIZED_MEMBER));
 
+        System.out.println("authSession = " + authSession);
+
         // 토큰 만료일 검증
         if(authSession.getTokenExpirationTime().isBefore(LocalDateTime.now()) || !authSession.isActive()) {
             throw new UnAuthorizedMemberException(ErrorCode.UNAUTHORIZED_MEMBER);
         }
 
         Member member = authSession.getMember();
+        System.out.println("member = " + member);
         return ResponseAuthDto.builder()
                                 .memberId(member.getId())
                                 .email(member.getEmail())
