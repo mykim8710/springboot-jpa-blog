@@ -27,12 +27,15 @@ public class EmbeddedRedisConfig {
     public void redisServer() throws IOException {
         int port = isRedisRunning() ? findAvailablePort() : redisPort;
         redisServer = new RedisServer(port);
+
+        log.info("start embedded redis server, port={}", redisPort);
         redisServer.start();
     }
 
     @PreDestroy
     public void stopRedis() {
         if (redisServer != null) {
+            log.info("stop embedded redis server");
             redisServer.stop();
         }
     }
