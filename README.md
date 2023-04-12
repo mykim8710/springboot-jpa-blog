@@ -298,4 +298,3 @@ private Member member;
 - Post가 memberId를 fk로 갖는다.
 - fetch : LAZY(default : EAGER) 
 - Post조회 시, Member 정보도 같이 조회되야 하지만 LAZY로 설정한다면 N+1 문제 발생 => 페치조인 또는 querydsl 조인사용
-
